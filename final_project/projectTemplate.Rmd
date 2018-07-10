@@ -1,0 +1,106 @@
+The Relationship Of Heart Disease And Farmer's Market
+========================================================
+#Abstract
+I explore the data sets, 'Heart Disease Mortality' and 'Farmer's Market In The US', to study the relationship between them. The goal of this project is to capture a possible link of farmer's markets to heart disease mortality.
+
+#Introduction
+The Center For Disease Control And Prevention provides the data set 'Heart Disease Mortality Data Among US Adults (35+) by State/County in 2014' which is downloadable at <a href='https://catalog.data.gov/dataset/heart-disease-mortality-data-among-us-adults-35-by-state-territory-and-county-5fb7c'>DATA.GOV</a>. This data set contains the numbers of deaths from <a href='http://www.heart.org/HEARTORG/Conditions/What-is-Cardiovascular-Disease_UCM_301852_Article.jsp#.Wz57p9JKjIU'>Cardiovascular Disease</a>, also simply called heart disease, every 100,000 population by gender and race in state/county level. Another data set 'Farmer's Market In The US' is procured from The United States Department of Agriculture at <a href='https://www.ams.usda.gov/services/local-regional/farmers-markets-and-direct-consumer-marketing'>USDA</a>. 8.7k+ Farmer's markets are listed with information of state, exact locations and items. Even though the farmer's market data is collected between 2011 and 2018, most of the data was updated in 2015 which is almost the same year of that of the heart disease data. Also considering the small variability of the data over time, therefore, these two data sets can be compared without any serious errors.
+
+I will be studying these data to discover trends of which states have more or less heart disease mortality and whether the states have a relationship with the number of farmer's markets. The importance of these questions stem from the fact that the number one cause of death in the US is none other than heart diseases.
+
+It has been talked a lot about what causes heart diseases such as diet habits as interests in organic/fresh foods have been growing fast. Although people now believe that bad diets could cause heart diseases thanks to researches and education, there lacks the reverse thoughts of reducing the risks with good diets.
+
+First step to answer these questions is to explore the data sets individually. I will look into the data, one by one, to see how they are distributed and visualize on the US map to gain some ideas where heart diseases or farmer's markets are found the most and least.
+
+Second, I will join the two data sets to find a pattern between the heart disease mortality and the number of farmer's markets. This will be shown on the map for better understanding. The anticipated result is that the mortality is found to be lower where there are many farmer's markets than where there are less.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Load the packages
+library(ggplot2)
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+heart_mortality <- read.csv('Heart_Disease_Mortality_by_County.csv')
+farmers_market <- read.csv('Farmers_Markets_by_County.csv')
+```
+
+# Univariate Plots Section
+```{r echo=FALSE, Univariate_Plots}
+
+```
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+
+### What is/are the main feature(s) of interest in your dataset?
+
+### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+
+### Did you create any new variables from existing variables in the dataset?
+
+### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+
+
+
+# Bivariate Plots Section
+```{r echo=FALSE, Bivariate_Plots}
+
+```
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+### What was the strongest relationship you found?
+
+
+
+
+# Multivariate Plots Section
+
+```{r echo=FALSE, Multivariate_Plots}
+
+```
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+
+### Were there any interesting or surprising interactions between features?
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+```{r echo=FALSE, Plot_One}
+
+```
+
+### Description One
+
+
+### Plot Two
+```{r echo=FALSE, Plot_Two}
+
+```
+
+### Description Two
+
+
+### Plot Three
+```{r echo=FALSE, Plot_Three}
+
+```
+
+### Description Three
+
+------
+
+# Reflection

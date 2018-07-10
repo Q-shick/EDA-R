@@ -1,0 +1,163 @@
+---
+title: "lesson4_problems"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(gridExtra)
+
+summary(diamonds)
+```
+
+
+---
+Problem 1.scatter plot of price vs. x
+---
+```{r}
+ggplot(diamonds, aes(x, price)) +
+  geom_point(alpha = 1/20)
+```
+
+---
+Problem 2. analysis of the scatter plot
+---
+=> As x becomes larger, price goes up in exponential trend. Also, it seems that most of the observations are situated in the lower price and smaller x zone.
+
+---
+Problem 3. correlations
+---
+```{r}
+corr_x <- with(diamonds, cor.test(price, x))
+corr_y <- with(diamonds, cor.test(price, y))
+corr_z <- with(diamonds, cor.test(price, z))
+
+sprintf("X: %f, Y: %f, Z: %f", corr_x$estimate, corr_y$estimate, corr_z$estimate)
+```
+
+---
+Problem 4. scatter plot of price vs. depth
+---
+```{r}
+ggplot(diamonds, aes(depth, price)) +
+  geom_point(alpha = 1/20, color = 'blue') +
+  geom_smooth()
+```
+
+---
+Problem 5. alpha and breaks to the scatter plot of price vs. x
+---
+```{r}
+ggplot(data = diamonds, aes(depth, price)) + 
+  geom_point(alpha = 1/100) +
+  scale_x_continuous(breaks = seq(0, 80, 2))
+```
+
+---
+Problem 6. typical depth range
+---
+=> [58, 64]
+
+---
+Problem 7. correlation of price vs. depth
+---
+```{r}
+corr_depth <- with(diamonds, cor.test(price, depth))
+
+sprintf("Price-Depth: %f", corr_depth$estimate)
+```
+=> The correlation between two are almost zero, which provides no information.
+
+---
+Problem 8. scatter plot of price vs. carat
+---
+```{r}
+ggplot(diamonds, aes(carat, price)) +
+  geom_point(color = 'pink')
+```
+
+---
+Problem 9. scatter plot of price vs. volume (new variable)
+---
+```{r}
+diamonds$volume <- diamonds$x * diamonds$y * diamonds$z
+
+ggplot(diamonds, aes(volume, price)) +
+  geom_point(color = 'red')
+```
+
+---
+Problem 10.
+---
+=> The price vs. volume is in proportional relationship with the limited number of outliers. With the sharp slope, the price goes up a lot for every unit increment of the volume.
+
+---
+Extra Note. diamonds with 0 volume
+---
+```{r}
+count(diamonds$volume == 0)
+```
+
+---
+Problem 11. correlation of price vs. volume
+---
+```{r}
+corr_volume <- with(subset(diamonds, volume != 0 & volume <= 800),
+                    cor.test(price, volume))
+
+sprintf("Price-Volume: %f", corr_volume$estimate)
+```
+
+---
+Problem 12. adjustment for price vs. volume
+---
+```{r}
+ggplot(subset(diamonds, (volume != 0 & volume <= 800)), aes(volume, price)) +
+  geom_point(alpha = 1/20, color = 'red') +
+  geom_smooth(method = 'lm')
+```
+=> linear model represents the plot properly because the correlation between two variables are very high.
+
+---
+Problem 13. mean price by clarity
+---
+```{r}
+diamonds_by_clarity <- diamonds %>%
+  group_by(clarity) %>%
+  summarise(mean_price = mean(price), median_price = median(price),
+            min_price = min(price), max_price = max(price), n = n()) %>%
+  arrange(clarity)
+
+head(diamonds_by_clarity)
+```
+
+---
+Problem 14. multiple bar plots of clarity and color
+---
+```{r}
+diamonds_by_clarity <- group_by(diamonds, clarity)
+diamonds_mp_by_clarity <- summarise(diamonds_by_clarity, mean_price = mean(price))
+
+diamonds_by_color <- group_by(diamonds, color)
+diamonds_mp_by_color <- summarise(diamonds_by_color, mean_price = mean(price))
+
+p_clarity <- ggplot(diamonds_mp_by_clarity, aes(clarity, mean_price)) +
+  geom_col(fill = 'blue', alpha = 0.5)
+
+p_color <- ggplot(diamonds_mp_by_color, aes(color, mean_price)) +
+  geom_col(fill = 'yellow', alpha = 0.5)
+
+grid.arrange(p_clarity, p_color, ncol = 2, top = "Clarity & Color\n")
+```
+
+---
+Problem 15. analysis of the bar plots
+---
+=> First, we should note that clarity and color are such categorical data that we can't obtain correlation directly. This is why we drew the bar plots for the mean prices of each grade to capture a trend visually. Surprisingly enough, both the clarity and the color show no specific pattern. The clarity has some ups & downs but the color has some trend that it becomes more expensive as the grade goes down; color 'J' is worst but priced the highest. The clarity has a similar pattern but as strong. In conclusion, both the clarity and the color have some negative relationship with the price unlike our expectation and the color seems to have stronger influences on the price.
+

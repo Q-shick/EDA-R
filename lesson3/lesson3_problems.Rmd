@@ -1,0 +1,184 @@
+---
+title: "lesson3_problems"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(gridExtra)
+library(tidyr)
+library(dplyr)
+
+data("diamonds")
+```
+
+---
+Problem 1. number of observation/variables, data types
+---
+```{r}
+summary(diamonds)
+```
+
+```{r}
+names(diamonds)
+```
+
+```{r}
+dim(diamonds)
+```
+
+```{r}
+head(diamonds)
+```
+
+```{r}
+levels(diamonds$color)
+```
+
+---
+Problem 2. histogram
+---
+```{r}
+qplot(x = price, data = diamonds,
+      binwidth = 200,
+      color = I('black'), fill = I('blue'),
+      xlab = "Price Range",
+      ylab = "Number of Diamonds") +
+  scale_x_continuous(breaks = seq(0, 100, 20000))
+```
+
+---
+Problem 3. histogram summary
+---
+```{r}
+summary(diamonds$price)
+```
+=> From the histogram, it's long-tailed having median on the left of mean. The summary of the price supports the fact that most of the prices are centered around 0 ~ 2500.
+
+---
+Problem 4. how many diamonds in a certain range
+---
+```{r}
+diamonds$price_range <- ifelse(diamonds$price < 250, 'cheap', 'average')
+diamonds$price_range <- ifelse(diamonds$price < 500, diamonds$price_range, 'expensive')
+diamonds$price_range <- ifelse(diamonds$price < 15000, diamonds$price_range, 'premium')
+
+table(diamonds$price_range)
+```
+
+---
+Problem 5. peak of histogram
+---
+```{r}
+# round the prices (e.g. 133 -> 100, 271 -> 300)
+price_rounded <- round(diamonds$price, digits = -2)
+# list prices and find the most found
+uniq_price <- unique(price_rounded)
+uniq_price[which.max(tabulate(match(price_rounded, uniq_price)))]
+# count the most found
+length(price_rounded[price_rounded == 700])
+```
+
+---
+Problem 6. price by cut histogram
+---
+```{r}
+p1 <- qplot(x = price, data = subset(diamonds, cut == 'Fair'), xlab = 'Fair')
+p2 <- qplot(x = price, data = subset(diamonds, cut == 'Good'), xlab = 'Good')
+p3 <- qplot(x = price, data = subset(diamonds, cut == 'Very Good'), xlab = 'Very Good')
+p4 <- qplot(x = price, data = subset(diamonds, cut == 'Premium'), xlab = 'Premium')
+p5 <- qplot(x = price, data = subset(diamonds, cut == 'Ideal'), xlab = 'Ideal')
+
+grid.arrange(p1, p2, p3, p4, p5)
+```
+
+---
+Problem 7. Price by cut
+---
+```{r}
+by(diamonds$price, diamonds$cut, summary)
+```
+
+---
+Problem 8. scale and multiple histogram
+---
+```{r}
+ggplot(aes(x = price), data = diamonds) +
+  geom_histogram(color = 'black', fill = 'red') +
+  scale_x_continuous(limits = c(0, 20000), breaks = seq(0, 20000, 1000)) +
+  theme_bw(base_size = 5) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_wrap(~cut, scales = 'free')
+```
+
+---
+Problem 9. price per Carat by cut
+---
+```{r}
+ggplot(aes(x = price/carat), data = diamonds) +
+  geom_histogram(color = 'black', fill = 'blue') +
+  scale_x_log10(limits = c(500, 15000), 
+                breaks = scales::trans_breaks('log10', function(x) 10^x)) +
+  theme_bw(base_size = 10) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  facet_wrap(~cut, scales = 'free')
+```
+
+---
+Problem 10. price box plot
+---
+```{r}
+# price by clarity
+qplot(x = clarity, y = price,
+      data = diamonds,
+      geom = 'boxplot')
+```
+
+```{r}
+# price by cut
+qplot(x = cut, y = price,
+      data = diamonds,
+      geom = 'boxplot')
+```
+
+```{r}
+# price by color
+ggplot(aes(x = color, y = price), data = diamonds) +
+  geom_boxplot()
+```
+
+---
+Problem 11. IQR
+---
+```{r}
+# price by color summary
+IQR(subset(diamonds, color == 'D')$price)
+```
+
+---
+Problem 12. price per carat using box plot
+---
+```{r}
+qplot(x = color, y = price/carat,
+      data = diamonds,
+      geom = 'boxplot') +
+  coord_cartesian(ylim = c(2000, 6000))
+```
+# Analysis: 
+
+---
+Problem 13. crat frequency polygon
+---
+```{r}
+ggplot(aes(x = carat), data = diamonds) +
+  geom_freqpoly(binwidth = 0.01)
+```
+
+```{r}
+table(diamonds$carat == 1.01)
+```
+

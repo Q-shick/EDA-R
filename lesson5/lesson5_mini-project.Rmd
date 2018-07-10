@@ -1,0 +1,138 @@
+---
+title: "lesson5_project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(reshape2)
+
+co2_per_usd <- read.csv('../Data/co2 kg per USD.csv')
+co2_per_usd <- co2_per_usd[, -c(2:21, 51:53)]
+co2_per_usd <- drop_na(co2_per_usd)
+colnames(co2_per_usd)[1] <- 'country'
+
+gdp_capita <- read.csv('../Data/GDPpercapitaconstant2000US.csv')
+gdp_capita <- gdp_capita[, c(1, 53)]
+gdp_capita <- drop_na(gdp_capita)
+colnames(gdp_capita)[1] <- 'country'
+
+gdp_capita$income_class <- ifelse(gdp_capita$X2011 > 12000, "upper",
+                                  "upper_middle")
+gdp_capita$income_class <- ifelse(gdp_capita$X2011 < 3000, "lower_meddle",
+                               gdp_capita$income_class)
+gdp_capita$income_class <- ifelse(gdp_capita$X2011 < 1000, "lower",
+                               gdp_capita$income_class)
+gdp_capita <- gdp_capita[-2]
+
+co2_per_usd <- merge(x = co2_per_usd, y = gdp_capita, by = 'country')
+```
+
+# Histogram of CO2 in 1980 vs 2008
+```{r}
+p_1980 <- ggplot(co2_per_usd, aes(X1980)) +
+  geom_histogram(binwidth = 1/20, color = 'black', fill = 'blue') +
+  labs(title = "CO2 Emission per USD in 1980", x = "CO2", y = "Countries") +
+  scale_x_continuous(limits = c(0, 1.8), breaks = seq(0, 1.8, 0.2))
+
+p_2008 <- ggplot(co2_per_usd, aes(X2008)) +
+  geom_histogram(binwidth = 1/20, color = 'black', fill = 'blue') +
+  labs(title = "CO2 Emission per USD in 2008", x = "CO2", y = "Countries") +
+  scale_x_continuous(limits = c(0, 1.8), breaks = seq(0, 1.8, 0.2))
+
+grid.arrange(p_1980, p_2008, ncol = 1)
+```
+
+```{r}
+ggplot(co2_per_usd, aes(X2008)) +
+  geom_histogram(binwidth = 1/10, color = 'black', fill = 'blue') +
+  labs(title = "CO2 Emission per USD in 2008 (log)", 
+       x = "CO2", y = "Countries") +
+  scale_x_log10()
+```
+
+```{r}
+summary_1980 <- summary(co2_per_usd$X1980)
+summary_2008 <- summary(co2_per_usd$X2008)
+
+cat("\tMin\t   1st Qu.   Median    Mean\t3rd Qu.\t  Max\n", "1980: ",
+    summary_1980, "\n\n", "2008: ", summary_2008)
+```
+
+# Scatter Plot by Year
+```{r}
+co2_per_usd.scatter <- co2_per_usd
+colnames(co2_per_usd.scatter) <- c('country', 1980:2008, 'income_class')
+co2_per_usd.scatter <- melt(co2_per_usd.scatter, 
+                            id.vars = c('country', 'income_class'),
+                            variable.name = 'year', 
+                            value.name = 'co2')
+co2_per_usd.scatter$year <- as.numeric(co2_per_usd.scatter$year) + 1979
+
+ggplot(co2_per_usd.scatter, aes(year, co2)) +
+  geom_point(color = 'pink', alpha = 1/5, 
+             position = position_jitter()) +
+  geom_smooth(method = 'lm') +
+  labs(title = "CO2 Emission by Year", y ="CO2") +
+  scale_x_continuous(breaks = seq(1980, 2008, 5))
+```
+
+```{r}
+countries_over_1.0_1980 <- co2_per_usd[co2_per_usd$X1980 >= 1.0, 1]
+countries_over_1.0_2008 <- co2_per_usd[co2_per_usd$X2006 >= 1.0, 1]
+corr_co2_time <- with(co2_per_usd.scatter, cor.test(as.numeric(year), co2))
+
+cat(" [Countries over 1.0 CO2 per USD in 1980]\n", 
+    as.character(countries_over_1.0_1980), "\n\n",
+    "[Countries over 1.0 CO2 per USD in 2008]\n",
+    as.character(countries_over_1.0_2008), "\n\n",
+    "Correlation Between CO2 and Time: ",
+    corr_co2_time$estimate)
+```
+
+# CO2 Mean and Median by Year
+```{r}
+co2_per_usd.year <- co2_per_usd.scatter %>%
+  group_by(year) %>%
+  summarise(co2_mean = mean(co2), co2_median = median(co2)) %>%
+  arrange(year)
+
+ggplot(co2_per_usd.year) +
+  geom_line(aes(x = year, y = co2_mean, color = 'blue')) +
+  geom_line(aes(x = year, y = co2_median, color = 'green')) +
+  labs(title = "CO2 Mean and Median by Year", x = "Year", y = "CO2") +
+  scale_color_discrete(name = NULL, labels = c("Mean", "Median"))
+```
+
+```{r}
+corr_co2_time_mean <- with(co2_per_usd.year, cor.test(year, co2_mean))
+cat("Correlation Between CO2 and Time: ", corr_co2_time_mean$estimate)
+```
+
+```{r}
+ggplot(co2_per_usd.scatter, aes(year, co2)) +
+  geom_point(aes(color = income_class), alpha = 1/5, 
+             position = position_jitter()) +
+  labs(title = "CO2 Emission by Year", y ="CO2") +
+  scale_x_continuous(breaks = seq(1980, 2008, 5))
+```
+
+```{r}
+co2_per_usd.income_class <- co2_per_usd.scatter %>%
+  group_by(year, income_class) %>%
+  summarise(co2_mean = mean(co2)) %>%
+  arrange(year)
+
+ggplot(co2_per_usd.income_class) +
+  geom_line(aes(x = year, y = co2_mean)) +
+  facet_wrap(~income_class) +
+  labs(title = "CO2 Mean by Income Class", x = "Year", y = "CO2")
+```
+
