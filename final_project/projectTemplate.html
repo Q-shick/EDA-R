@@ -121,8 +121,11 @@ $(document).ready(function () {
 </div>
 
 
-<div id="the-relationship-of-heart-disease-and-farmers-market" class="section level1">
-<h1>The Relationship Of Heart Disease And Farmer’s Market</h1>
+<div id="heart-disease-mortality-and-farmers-market" class="section level1">
+<h1>Heart Disease Mortality And Farmer’s Market</h1>
+<h4>
+<i>Kyoosik Kim<br>July 2018</i>
+</h4>
 </div>
 <div id="abstract" class="section level1">
 <h1>Abstract</h1>
@@ -130,11 +133,82 @@ $(document).ready(function () {
 </div>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>The Center For Disease Control And Prevention provides the data set ‘Heart Disease Mortality Data Among US Adults (35+) by State/County in 2014’ which is downloadable at <a href="https://catalog.data.gov/dataset/heart-disease-mortality-data-among-us-adults-35-by-state-territory-and-county-5fb7c">DATA.GOV</a>. This data set contains the numbers of deaths from <a href="http://www.heart.org/HEARTORG/Conditions/What-is-Cardiovascular-Disease_UCM_301852_Article.jsp#.Wz57p9JKjIU">Cardiovascular Disease</a>, also simply called heart disease, every 100,000 population by gender and race in state/county level. Another data set ‘Farmer’s Market In The US’ is procured from The United States Department of Agriculture at <a href="https://www.ams.usda.gov/services/local-regional/farmers-markets-and-direct-consumer-marketing">USDA</a>. 8.7k+ Farmer’s markets are listed with information of state, exact locations and items. Even though the farmer’s market data is collected between 2011 and 2018, most of the data was updated in 2015 which is almost the same year of the heart disease data. Also considering the nature of the data, therefore, these two data sets can be compared without any serious errors.</p>
+<p>The Center For Disease Control And Prevention provides the data set ‘Heart Disease Mortality Data Among US Adults (35+) by State/County in 2014’ which is downloadable at <a href="https://catalog.data.gov/dataset/heart-disease-mortality-data-among-us-adults-35-by-state-territory-and-county-5fb7c">DATA.GOV</a>. This data set contains the numbers of deaths from <a href="http://www.heart.org/HEARTORG/Conditions/What-is-Cardiovascular-Disease_UCM_301852_Article.jsp#.Wz57p9JKjIU">Cardiovascular Disease</a>, also simply called heart disease, every 100,000 population by gender and race in state/county level. Another data set ‘Farmer’s Market In The US’ is procured from The United States Department of Agriculture at <a href="https://www.ams.usda.gov/services/local-regional/farmers-markets-and-direct-consumer-marketing">USDA</a>. 8.7k+ Farmer’s markets are listed with information of state, exact locations and items. Even though the farmer’s market data is collected between 2011 and 2018, most of the data was updated in 2015 which is almost the same year of that of the heart disease data. Also considering the small variability of the data over time, therefore, these two data sets can be compared without any serious errors.</p>
 <p>I will be studying these data to discover trends of which states have more or less heart disease mortality and whether the states have a relationship with the number of farmer’s markets. The importance of these questions stem from the fact that the number one cause of death in the US is none other than heart diseases.</p>
 <p>It has been talked a lot about what causes heart diseases such as diet habits as interests in organic/fresh foods have been growing fast. Although people now believe that bad diets could cause heart diseases thanks to researches and education, there lacks the reverse thoughts of reducing the risks with good diets.</p>
 <p>First step to answer these questions is to explore the data sets individually. I will look into the data, one by one, to see how they are distributed and visualize on the US map to gain some ideas where heart diseases or farmer’s markets are found the most and least.</p>
 <p>Second, I will join the two data sets to find a pattern between the heart disease mortality and the number of farmer’s markets. This will be shown on the map for better understanding. The anticipated result is that the mortality is found to be lower where there are many farmer’s markets than where there are less.</p>
+</div>
+<div id="dataset" class="section level1">
+<h1>Dataset</h1>
+<div id="preparation" class="section level3">
+<h3>Preparation</h3>
+<pre class="r"><code># load the packages
+library(ggplot2)
+library(stringi)</code></pre>
+<pre class="r"><code># load heart disease mortality data
+heart_mortality &lt;- read.csv('../Data/Heart_Disease_Mortality_by_County.csv')
+# select columns
+heart_mortality &lt;- subset(heart_mortality, GeographicLevel == 'County')
+heart_mortality &lt;- heart_mortality[, -c(1, 4:7, 9:13, 15, 17:18)]
+heart_mortality &lt;- heart_mortality[!is.na(heart_mortality$Data_Value), ]
+# change column names
+colnames(heart_mortality) &lt;- c('state', 'county', 'mortality', 
+                               'gender', 'race', 'location')
+# modify county values
+heart_mortality$county &lt;- gsub(&quot;County&quot;, &quot;&quot;, heart_mortality$county)
+heart_mortality$county &lt;- stri_trans_totitle(heart_mortality$county)
+heart_mortality$county &lt;- trimws(heart_mortality$county)
+# handle the mainland states and DC
+heart_mortality$state &lt;- state.abb[match(heart_mortality$state, state.abb)]
+dc &lt;- which(heart_mortality$county == &quot;District Of Columbia&quot;)
+heart_mortality$state[dc] &lt;- &quot;DC&quot;
+heart_mortality$state &lt;- factor(heart_mortality$state)
+# drop the data that is out of criteria (ex. abnormal NA's, non-US locations)
+heart_mortality &lt;- heart_mortality[complete.cases(heart_mortality), ]
+# show structure
+str(heart_mortality)</code></pre>
+<pre><code>## 'data.frame':    31062 obs. of  6 variables:
+##  $ state    : Factor w/ 51 levels &quot;AK&quot;,&quot;AL&quot;,&quot;AR&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ county   : chr  &quot;Aleutians East&quot; &quot;Aleutians West&quot; &quot;Anchorage&quot; &quot;Bethel&quot; ...
+##  $ mortality: num  105 212 258 352 306 ...
+##  $ gender   : Factor w/ 3 levels &quot;Female&quot;,&quot;Male&quot;,..: 3 3 3 3 3 3 3 3 3 3 ...
+##  $ race     : Factor w/ 6 levels &quot;American Indian and Alaskan Native&quot;,..: 5 5 5 5 5 5 5 5 5 5 ...
+##  $ location : Factor w/ 3282 levels &quot;&quot;,&quot;(-14.2766, -170.367)&quot;,..: 3256 3255 3271 3270 3275 3268 3278 3266 3263 3269 ...</code></pre>
+<pre class="r"><code># load farmer's market (fm) data set
+farmers_market &lt;- read.csv('../Data/Farmers_Markets_by_County.csv')
+# select columns
+farmers_market &lt;- farmers_market[, -c(1:9, 12:20, 23, 59)]
+farmers_market &lt;- farmers_market[, c(1:4, 11, 17:18, 24, 32:33)]
+farmers_market &lt;- farmers_market[farmers_market$County != &quot;&quot;, ]
+farmers_market &lt;- farmers_market[!is.na(farmers_market$x), ]
+# change column names
+colnames(farmers_market)[1:2] &lt;- c('county', 'state')
+# modify county values
+farmers_market$county &lt;- gsub(&quot;County&quot;, &quot;&quot;, farmers_market$county)
+farmers_market$county &lt;- stri_trans_totitle(farmers_market$county)
+farmers_market$county &lt;- trimws(farmers_market$county)
+# handle the mainland states and DC
+farmers_market$state &lt;- state.abb[match(farmers_market$state, state.name)]
+dc &lt;- which(farmers_market$county == 'District Of Columbia')
+farmers_market$state[dc] &lt;- &quot;DC&quot;
+farmers_market$state &lt;- factor(farmers_market$state)
+# drop the data that is out of criteria (ex. abnormal NA's, non-US locations)
+farmers_market &lt;- farmers_market[complete.cases(farmers_market), ]
+# show the structure
+str(farmers_market)</code></pre>
+<pre><code>## 'data.frame':    8174 obs. of  10 variables:
+##  $ county    : chr  &quot;Caledonia&quot; &quot;Cuyahoga&quot; &quot;Barton&quot; &quot;New York&quot; ...
+##  $ state     : Factor w/ 51 levels &quot;AK&quot;,&quot;AL&quot;,&quot;AR&quot;,..: 47 36 25 35 43 35 9 8 8 35 ...
+##  $ x         : num  -72.1 -81.7 -94.3 -73.9 -86.8 ...
+##  $ y         : num  44.4 41.4 37.5 40.8 36.1 ...
+##  $ Bakedgoods: Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 2 2 2 2 2 2 1 2 2 1 ...
+##  $ Herbs     : Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 2 2 2 2 2 2 2 2 2 1 ...
+##  $ Vegetables: Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ Nuts      : Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 1 1 1 2 1 2 1 2 1 1 ...
+##  $ Beans     : Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 2 1 1 1 1 1 1 2 1 2 ...
+##  $ Fruits    : Factor w/ 2 levels &quot;N&quot;,&quot;Y&quot;: 2 2 2 1 2 2 2 2 2 2 ...</code></pre>
+</div>
 </div>
 <div id="univariate-plots-section" class="section level1">
 <h1>Univariate Plots Section</h1>

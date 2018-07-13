@@ -1,5 +1,6 @@
-The Relationship Of Heart Disease And Farmer's Market
-========================================================
+#Heart Disease Mortality And Farmer's Market
+<h4><i>Kyoosik Kim<br>July 2018</i></h4>
+
 #Abstract
 I explore the data sets, 'Heart Disease Mortality' and 'Farmer's Market In The US', to study the relationship between them. The goal of this project is to capture a possible link of farmer's markets to heart disease mortality.
 
@@ -14,16 +15,74 @@ First step to answer these questions is to explore the data sets individually. I
 
 Second, I will join the two data sets to find a pattern between the heart disease mortality and the number of farmer's markets. This will be shown on the map for better understanding. The anticipated result is that the mortality is found to be lower where there are many farmer's markets than where there are less.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
-# Load the packages
+#Dataset
+
+###Preparation
+```{r message=FALSE, warning=FALSE, packages}
+# load the packages
 library(ggplot2)
+library(stringi)
+library(readr)
 ```
 
-```{r echo=FALSE, Load_the_Data}
-# Load the Data
-heart_mortality <- read.csv('Heart_Disease_Mortality_by_County.csv')
-farmers_market <- read.csv('Farmers_Markets_by_County.csv')
+```{r}
+process_region <- function(df, state_list) {
+  # modify county values
+  df$county <- gsub("County", "", df$county)
+  df$county <- stri_trans_totitle(df$county)
+  df$county <- trimws(df$county)
+  # modify the mainland states and DC
+  df$state <- state.abb[match(df$state, state_list)]
+  df$state[which(df$county == "District Of Columbia")] <- "DC"
+  df$state <- factor(df$state)
+  # drop the data that is out of criteria (ex. abnormal NA's, non-US locations)
+  df <- df[complete.cases(df), ]
+  # return the final data frame
+  return(df)
+}
 ```
+
+
+```{r Load_Clean_Data_hm}
+# load heart disease mortality data
+heart_mortality <- read.csv('../Data/Heart_Disease_Mortality_by_County.csv')
+# select columns
+heart_mortality <- subset(heart_mortality, GeographicLevel == 'County')
+heart_mortality <- heart_mortality[, -c(1, 4:7, 9:13, 15, 17:18)]
+heart_mortality <- heart_mortality[!is.na(heart_mortality$Data_Value), ]
+# change column names
+colnames(heart_mortality) <- c('state', 'county', 'mortality', 
+                               'gender', 'race', 'location')
+# process the regional columns
+heart_mortality <- process_region(heart_mortality, state.abb)
+# convert location to x, y coordinate format
+loc_split <- strsplit(as.character(heart_mortality$location), split = " ")
+heart_mortality$x <- parse_number(sapply(loc_split, '[', 1))
+heart_mortality$y <- parse_number(sapply(loc_split, '[', 2))
+# show structure
+str(heart_mortality)
+```
+
+```{r Load_Clean_Data_fm}
+# load farmer's market data set
+farmers_market <- read.csv('../Data/Farmers_Markets_by_County.csv')
+# select columns
+farmers_market <- farmers_market[, -c(1:9, 12:20, 23, 59)]
+farmers_market <- farmers_market[, c(1:4, 11, 17:18, 24, 32:33)]
+farmers_market <- farmers_market[farmers_market$County != "", ]
+farmers_market <- farmers_market[!is.na(farmers_market$x), ]
+# change column names
+colnames(farmers_market)[1:2] <- c('county', 'state')
+# process the regional columns
+farmers_market <- process_region(farmers_market, state.name)
+# show the structure
+str(farmers_market)
+```
+
+```{r}
+
+```
+
 
 # Univariate Plots Section
 ```{r echo=FALSE, Univariate_Plots}
