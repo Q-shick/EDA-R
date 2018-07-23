@@ -1,6 +1,6 @@
 ---
 title: "Lesson3 Project"
-output: html_document
+output: github_document
 ---
 
 ### Import libraries
