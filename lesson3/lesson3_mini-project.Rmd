@@ -1,13 +1,14 @@
 ---
-title: "lesson3_project"
+title: "Lesson3 Project"
 output: html_document
 ---
 
+### Import libraries
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(xlsx)
 library(ggplot2)
 library(tidyr)
@@ -15,21 +16,15 @@ library(dplyr)
 library(gridExtra)
 ```
 
-# Data from Gapminder: GDP/capita (US$, inflation-adjusted) by World Bank
+### Data from Gapminder: GDP/capita (US$, inflation-adjusted) by World Bank
 ```{r}
 gdp_capita <- read.csv('../Data/GDPpercapitaconstant2000US.csv')
-```
-
-```{r}
+colnames(gdp_capita)[1] <- "Country"
 head(gdp_capita)
 ```
 
-```{r}
-colnames(gdp_capita)[1] <- "Country"
-```
-
-# Histogram of The Past Year (1970) vs. The Recent Year (2011)
-```{r}
+### Histogram of The Past Year (1970) vs. The Recent Year (2011)
+```{r warning=FALSE}
 p_1970 <- ggplot(aes(x = X1970), data = subset(gdp_capita, !is.na(X1960))) +
   geom_histogram(binwidth = 500, color = 'black', fill = 'red') +
   xlab("GDP/capita in 1970") +
@@ -52,8 +47,8 @@ gdp_capita$Country[gdp_capita$X2011 > 50000 & !is.na(gdp_capita$X2011)]
 ```
 
 
-# Countries by Growth
-```{r}
+### Countries by Growth
+```{r warning=FALSE}
 gdp_capita_5yr <- subset(gdp_capita, !is.na(gdp_capita$X2006) & !is.na(gdp_capita$X2011))
 gdp_capita_5yr <- select(gdp_capita_5yr, matches("Country"), X2006:X2011)
 gdp_capita_5yr$growth_rate <- ((gdp_capita_5yr$X2011 - gdp_capita_5yr$X2006) 
@@ -85,8 +80,8 @@ gdp_capita_5yr$Country[gdp_capita_5yr$growth_rate == max(gdp_capita_5yr$growth_r
 [Tajikistan GDP/capita without inflation adjustment](https://www.google.com/search?rlz=1C1CAFA_enKR676KR676&ei=eOUdW6CvNIyWsgW08424CQ&q=tajikistan+gdp+per+capita&oq=tajikis&gs_l=psy-ab.3.0.0i67k1l8j0j0i67k1.28516.30091.0.33115.7.6.0.1.1.0.100.525.5j1.6.0....0...1c.1.64.psy-ab..0.7.528...35i39k1j0i131i67k1j0i131k1j0i20i264k1.0.gYM5bQ4NgHQ)
 ```
 
-# Top & Bottom Countries by Growth Class
-```{r}
+### Top & Bottom Countries by Growth Class
+```{r warning=FALSE}
 gdp_capita_5yr$class <- ifelse(gdp_capita_5yr$X2006 > 20000, "upper", "middle")
 gdp_capita_5yr$class <- ifelse(gdp_capita_5yr$X2006 < 2000, "under", 
                                gdp_capita_5yr$class)
