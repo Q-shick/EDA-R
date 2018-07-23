@@ -16,58 +16,9 @@ library(gridExtra)
 ``` r
 gdp_capita <- read.csv('../Data/GDPpercapitaconstant2000US.csv')
 colnames(gdp_capita)[1] <- "Country"
-head(gdp_capita)
 ```
 
-    ##                 Country    X1960    X1961   X1962    X1963    X1964
-    ## 1              Abkhazia       NA       NA      NA       NA       NA
-    ## 2           Afghanistan       NA       NA      NA       NA       NA
-    ## 3 Akrotiri and Dhekelia       NA       NA      NA       NA       NA
-    ## 4               Albania       NA       NA      NA       NA       NA
-    ## 5               Algeria 1280.385 1085.415 855.948 1128.416 1170.324
-    ## 6        American Samoa       NA       NA      NA       NA       NA
-    ##      X1965    X1966    X1967    X1968    X1969   X1970    X1971    X1972
-    ## 1       NA       NA       NA       NA       NA      NA       NA       NA
-    ## 2       NA       NA       NA       NA       NA      NA       NA       NA
-    ## 3       NA       NA       NA       NA       NA      NA       NA       NA
-    ## 4       NA       NA       NA       NA       NA      NA       NA       NA
-    ## 5 1215.016 1127.614 1200.558 1291.864 1359.491 1436.13 1235.664 1527.646
-    ## 6       NA       NA       NA       NA       NA      NA       NA       NA
-    ##      X1973   X1974    X1975   X1976    X1977    X1978    X1979    X1980
-    ## 1       NA      NA       NA      NA       NA       NA       NA       NA
-    ## 2       NA      NA       NA      NA       NA       NA       NA       NA
-    ## 3       NA      NA       NA      NA       NA       NA       NA       NA
-    ## 4       NA      NA       NA      NA       NA       NA       NA 1060.685
-    ## 5 1538.306 1603.35 1632.296 1714.07 1747.665 1848.438 1923.291 1876.076
-    ## 6       NA      NA       NA      NA       NA       NA       NA       NA
-    ##      X1981    X1982    X1983    X1984    X1985    X1986    X1987    X1988
-    ## 1       NA       NA       NA       NA       NA       NA       NA       NA
-    ## 2       NA       NA       NA       NA       NA       NA       NA       NA
-    ## 3       NA       NA       NA       NA       NA       NA       NA       NA
-    ## 4 1099.513 1110.512 1101.336 1065.235 1059.866 1091.561 1054.248 1013.629
-    ## 5 1869.621 1924.614 1963.365 2008.472 2020.087 1969.764 1902.061 1833.153
-    ## 6       NA       NA       NA       NA       NA       NA       NA       NA
-    ##      X1989     X1990     X1991     X1992     X1993     X1994     X1995
-    ## 1       NA        NA        NA        NA        NA        NA        NA
-    ## 2       NA        NA        NA        NA        NA        NA        NA
-    ## 3       NA        NA        NA        NA        NA        NA        NA
-    ## 4 1092.475  977.7655  687.9919  643.2858  714.2414  784.5831  899.7829
-    ## 5 1864.713 1832.7434 1766.6608 1755.9737 1680.3799 1630.3815 1660.0042
-    ## 6       NA        NA        NA        NA        NA        NA        NA
-    ##       X1996    X1997    X1998    X1999    X2000    X2001    X2002    X2003
-    ## 1        NA       NA       NA       NA       NA       NA       NA       NA
-    ## 2        NA       NA       NA       NA       NA       NA       NA       NA
-    ## 3        NA       NA       NA       NA       NA       NA       NA       NA
-    ## 4  990.6532  895.561 1013.514 1118.172 1200.137 1281.843 1313.723 1381.041
-    ## 5 1698.3338 1690.238 1750.651 1781.142 1794.405 1814.415 1871.922 1971.513
-    ## 6        NA       NA       NA       NA       NA       NA       NA       NA
-    ##      X2004    X2005    X2006    X2007    X2008    X2009    X2010    X2011
-    ## 1       NA       NA       NA       NA       NA       NA       NA       NA
-    ## 2       NA       NA       NA       NA       NA       NA       NA       NA
-    ## 3       NA       NA       NA       NA       NA       NA       NA       NA
-    ## 4 1454.023 1525.724 1594.495 1681.614 1804.419 1857.353 1915.424 1965.707
-    ## 5 2043.136 2115.186 2124.958 2155.485 2173.788 2192.704 2231.980 2255.225
-    ## 6       NA       NA       NA       NA       NA       NA       NA       NA
+The data will be used for analyzing trends of GDP/capita over time. The analysis will be conducted for both long term and short term to understand a general trend and the recent trend. There will be some guess work to figure why these trends appear. For the analysis, the data will be processed in such a manner that some column name is changed or some variable is added or dropped for a fair comparison.
 
 ### Histogram of The Past Year (1970) vs. The Recent Year (2011)
 
@@ -90,6 +41,8 @@ grid.arrange(p_1970, p_2011, ncol = 1)
 ```
 
 ![](lesson3_mini-project_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+Unlike in 1970, there are many countries with GDP/capita over 20,000 USD in 2011. However, there are still many remaining under 2,000 USD. In conclusion, it can be said that the GDP/capita has moved up in the last a few decades but the disparity among the countries has also grown.
 
 ``` r
 gdp_capita$Country[gdp_capita$X2011 > 50000 & !is.na(gdp_capita$X2011)]
@@ -116,6 +69,8 @@ ggplot(aes(x = growth_rate), data = gdp_capita_5yr) +
 
 ![](lesson3_mini-project_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
+The 5 years growth rate is how much each GDP/capita has grown from 2006 to 2011. As shown, most of the countries fall between -10% and 10%. The reason why there are many of minus growth is supposedly because of the global financial crisis of 2007~2008. While an oil-producing country of UAE is ranked the least growth, many EU countries are listed in the minus growth countries, too. On the other hand, the countries with more than 20% growth in the same period are mostly undeveloped countries in Africa and Asia.
+
 ``` r
 summary(gdp_capita_5yr$growth_rate)
 ```
@@ -130,7 +85,7 @@ gdp_capita_5yr$Country[gdp_capita_5yr$growth_rate == min(gdp_capita_5yr$growth_r
     ## [1] United Arab Emirates
     ## 275 Levels: Ãland Abkhazia Afghanistan Akrotiri and Dhekelia ... Zimbabwe
 
-    [UAE GDP/capita without inflation adjustment](https://www.google.com/search?rlz=1C1CAFA_enKR676KR676&ei=muUdW5_BMtGOsQXaiKTQBA&q=UAE+gdp+per+capita&oq=UAE+gdp+per+capita&gs_l=psy-ab.3..0i67k1j0i7i30k1j0l2j0i30k1l4j0i10i30k1j0i30k1.21108.21587.0.21827.3.3.0.0.0.0.105.279.2j1.3.0....0...1c.1.64.psy-ab..0.3.279...0i7i10i30k1j0i10k1.0.ZGpxk3626Nc)
+[UAE GDP/capita without inflation adjustment](https://www.google.com/search?rlz=1C1CAFA_enKR676KR676&ei=muUdW5_BMtGOsQXaiKTQBA&q=UAE+gdp+per+capita&oq=UAE+gdp+per+capita&gs_l=psy-ab.3..0i67k1j0i7i30k1j0l2j0i30k1l4j0i10i30k1j0i30k1.21108.21587.0.21827.3.3.0.0.0.0.105.279.2j1.3.0....0...1c.1.64.psy-ab..0.3.279...0i7i10i30k1j0i10k1.0.ZGpxk3626Nc)
 
 ``` r
 gdp_capita_5yr$Country[gdp_capita_5yr$growth_rate == max(gdp_capita_5yr$growth_rate)]
@@ -139,7 +94,7 @@ gdp_capita_5yr$Country[gdp_capita_5yr$growth_rate == max(gdp_capita_5yr$growth_r
     ## [1] Tajikistan
     ## 275 Levels: Ãland Abkhazia Afghanistan Akrotiri and Dhekelia ... Zimbabwe
 
-    [Tajikistan GDP/capita without inflation adjustment](https://www.google.com/search?rlz=1C1CAFA_enKR676KR676&ei=eOUdW6CvNIyWsgW08424CQ&q=tajikistan+gdp+per+capita&oq=tajikis&gs_l=psy-ab.3.0.0i67k1l8j0j0i67k1.28516.30091.0.33115.7.6.0.1.1.0.100.525.5j1.6.0....0...1c.1.64.psy-ab..0.7.528...35i39k1j0i131i67k1j0i131k1j0i20i264k1.0.gYM5bQ4NgHQ)
+[Tajikistan GDP/capita without inflation adjustment](https://www.google.com/search?rlz=1C1CAFA_enKR676KR676&ei=eOUdW6CvNIyWsgW08424CQ&q=tajikistan+gdp+per+capita&oq=tajikis&gs_l=psy-ab.3.0.0i67k1l8j0j0i67k1.28516.30091.0.33115.7.6.0.1.1.0.100.525.5j1.6.0....0...1c.1.64.psy-ab..0.7.528...35i39k1j0i131i67k1j0i131k1j0i20i264k1.0.gYM5bQ4NgHQ)
 
 ### Top & Bottom Countries by Growth Class
 
@@ -159,9 +114,15 @@ ggplot(aes(x = growth_rate, y = ..count../sum(..count..)), data = gdp_capita_5yr
 
 ![](lesson3_mini-project_files/figure-markdown_github/unnamed-chunk-9-1.png)
 
+As discussed in the previous graph, GDP/capita can be classified as 'Upper', 'Middle', 'Under'. With just 3 simple line plots, it is now clear that the 5 years were when the developed countries suffered while undeveloped countries had chance to grow. This can be yet again confirmed with the box plot that undeveloped countries have grown in the 5 years the most.
+
 ``` r
 ggplot(aes(x = class ,y = growth_rate), data = gdp_capita_5yr) +
   geom_boxplot()
 ```
 
 ![](lesson3_mini-project_files/figure-markdown_github/unnamed-chunk-10-1.png)
+
+### Conclusion
+
+The most interesting fact found through this analysis is that there are still so many countries remaining under GDP/capita 2,000 USD while the number of countries becomes smaller as the GDP/capita increases. But it is also true that most of the countries grew over a long time. In the short term, some undeveloped countries could grow remarkably while most developed countries struggled during recent years.

@@ -20,8 +20,9 @@ library(gridExtra)
 ```{r}
 gdp_capita <- read.csv('../Data/GDPpercapitaconstant2000US.csv')
 colnames(gdp_capita)[1] <- "Country"
-head(gdp_capita)
 ```
+
+The data will be used for analyzing trends of GDP/capita over time. The analysis will be conducted for both long term and short term to understand a general trend and the recent trend. There will be some guess work to figure why these trends appear. For the analysis, the data will be processed in such a manner that some column name is changed or some variable is added or dropped for a fair comparison.
 
 ### Histogram of The Past Year (1970) vs. The Recent Year (2011)
 ```{r warning=FALSE}
@@ -41,6 +42,8 @@ p_2011 <- ggplot(aes(x = X2011), data = subset(gdp_capita, !is.na(X1960))) +
 
 grid.arrange(p_1970, p_2011, ncol = 1)
 ```
+
+Unlike in 1970, there are many countries with GDP/capita over 20,000 USD in 2011. However, there are still many remaining under 2,000 USD. In conclusion, it can be said that the GDP/capita has moved up in the last a few decades but the disparity among the countries has also grown.
 
 ```{r}
 gdp_capita$Country[gdp_capita$X2011 > 50000 & !is.na(gdp_capita$X2011)]
@@ -62,6 +65,8 @@ ggplot(aes(x = growth_rate), data = gdp_capita_5yr) +
   scale_x_continuous(limits = c(-30, 70), breaks = seq(-30, 70, 5))
 ```
 
+The 5 years growth rate is how much each GDP/capita has grown from 2006 to 2011. As shown, most of the countries fall between -10% and 10%. The reason why there are many of minus growth is supposedly because of the global financial crisis of 2007~2008. While an oil-producing country of UAE is ranked the least growth, many EU countries are listed in the minus growth countries, too. On the other hand, the countries with more than 20% growth in the same period are mostly undeveloped countries in Africa and Asia.
+
 ```{r}
 summary(gdp_capita_5yr$growth_rate)
 ```
@@ -69,16 +74,14 @@ summary(gdp_capita_5yr$growth_rate)
 ```{r}
 gdp_capita_5yr$Country[gdp_capita_5yr$growth_rate == min(gdp_capita_5yr$growth_rate)]
 ```
-```
+
 [UAE GDP/capita without inflation adjustment](https://www.google.com/search?rlz=1C1CAFA_enKR676KR676&ei=muUdW5_BMtGOsQXaiKTQBA&q=UAE+gdp+per+capita&oq=UAE+gdp+per+capita&gs_l=psy-ab.3..0i67k1j0i7i30k1j0l2j0i30k1l4j0i10i30k1j0i30k1.21108.21587.0.21827.3.3.0.0.0.0.105.279.2j1.3.0....0...1c.1.64.psy-ab..0.3.279...0i7i10i30k1j0i10k1.0.ZGpxk3626Nc)
-```
 
 ```{r}
 gdp_capita_5yr$Country[gdp_capita_5yr$growth_rate == max(gdp_capita_5yr$growth_rate)]
 ```
-```
+
 [Tajikistan GDP/capita without inflation adjustment](https://www.google.com/search?rlz=1C1CAFA_enKR676KR676&ei=eOUdW6CvNIyWsgW08424CQ&q=tajikistan+gdp+per+capita&oq=tajikis&gs_l=psy-ab.3.0.0i67k1l8j0j0i67k1.28516.30091.0.33115.7.6.0.1.1.0.100.525.5j1.6.0....0...1c.1.64.psy-ab..0.7.528...35i39k1j0i131i67k1j0i131k1j0i20i264k1.0.gYM5bQ4NgHQ)
-```
 
 ### Top & Bottom Countries by Growth Class
 ```{r warning=FALSE}
@@ -95,8 +98,13 @@ ggplot(aes(x = growth_rate, y = ..count../sum(..count..)), data = gdp_capita_5yr
   scale_x_continuous(limits = c(-30, 70), breaks = seq(-30, 70, 5))
 ```
 
+As discussed in the previous graph, GDP/capita can be classified as 'Upper', 'Middle', 'Under'. With just 3 simple line plots, it is now clear that the 5 years were when the developed countries suffered while undeveloped countries had chance to grow. This can be yet again confirmed with the box plot that undeveloped countries have grown in the 5 years the most.
+
 ```{r}
 ggplot(aes(x = class ,y = growth_rate), data = gdp_capita_5yr) +
   geom_boxplot()
 ```
 
+### Conclusion
+
+The most interesting fact found through this analysis is that there are still so many countries remaining under GDP/capita 2,000 USD while the number of countries becomes smaller as the GDP/capita increases. But it is also true that most of the countries grew over a long time. In the short term, some undeveloped countries could grow remarkably while most developed countries struggled during recent years.
