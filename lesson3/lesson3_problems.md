@@ -1,5 +1,9 @@
-Lesson3 Problems
+Lesson3-Univariate Problems
 ================
+
+##### Keywords
+
+file format, histogram, facet, scaling, frequency polygon
 
 ### Import libraries and read Dimond data set
 

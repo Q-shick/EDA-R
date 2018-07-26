@@ -1,7 +1,10 @@
 ---
-title: "Lesson3 Problems"
+title: "Lesson3-Univariate Problems"
 output: github_document
 ---
+
+##### Keywords
+file format, histogram, facet, scaling, frequency polygon
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -16,7 +19,6 @@ library(dplyr)
 
 data("diamonds")
 ```
-
 
 ### Problem 1. number of observation/variables, data types
 ```{r}
@@ -38,7 +40,6 @@ head(diamonds)
 ```{r}
 levels(diamonds$color)
 ```
-
 
 ### Problem 2. histogram
 ```{r}
@@ -149,7 +150,6 @@ qplot(x = color, y = price/carat,
 ```
 
 The best color is 'D' and the next to the right and so on, to the worst 'J' on the x-axis. Surprisingly enough, the best color seems to be less than average in median price and the worst color is one of the high median prices. And 'G' in the middle has the highest price. All these imply that the factor color is not actually influential on price of a diamond.
-
 
 ### Problem 13. crat frequency polygon
 ```{r}
