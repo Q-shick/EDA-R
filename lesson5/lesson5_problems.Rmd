@@ -1,7 +1,10 @@
 ---
-title: "lesson5_problems"
-output: html_document
+title: "Lesson5-Multivariate Problems"
+output: github_document
 ---
+
+##### Keywords
+point plot, pair plot, cutting range, reshaping (dcast, melt)
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -12,10 +15,8 @@ library(ggplot2)
 library(reshape2)
 ```
 
----
-Problem 1. histogram by color
----
-```{r}
+### Problem 1. histogram by color
+```{r message=FALSE}
 ggplot(diamonds, aes(price)) +
   geom_histogram(aes(fill = cut)) +
   facet_wrap( ~ color) +
@@ -24,24 +25,18 @@ ggplot(diamonds, aes(price)) +
   theme_bw(base_size = 10)
 ```
 
----
-Problem 2. scatter plot of price vs. table
----
+### Problem 2. scatter plot of price vs. table
 ```{r}
 ggplot(diamonds, aes(table, price)) +
   geom_point(aes(color = cut), alpha = 1/5)
 ```
 
----
-Problem 3. table range by cut
----
+### Problem 3. table range by cut
 ```{r}
 summary(diamonds$table, by = cut)
 ```
 
----
-Problem 4. scatter plot of price vs. volume
----
+### Problem 4. scatter plot of price vs. volume
 ```{r}
 diamonds$volume <- with(diamonds, x * y * z)
 
@@ -51,19 +46,15 @@ ggplot(subset(diamonds, volume <= quantile(volume, probs = 0.99)),
   scale_y_log10()
 ```
 
----
-Problem 5. proportions of friend initiated
----
+### Problem 5. proportions of friend initiated
 ```{r}
 pf <- read.delim('../Data/pseudo_facebook.tsv')
 
 pf$prop_initiated <- with(pf, friendships_initiated / friend_count)
 ```
 
----
-Problem 6. line graph of median proportion of friend
----
-```{r}
+### Problem 6. line graph of median proportion of friend
+```{r warning=FALSE}
 pf$year_joined <- floor(2014 - pf$tenure / 365)
 pf$year_joined.bucket <- cut(pf$year_joined, breaks = c(2004, 2009, 2011, 2012))
 
@@ -72,26 +63,21 @@ ggplot(pf, aes(tenure, prop_initiated)) +
             stat = 'summary', fun.y = median)
 ```
 
----
-Problem 7. smoothing the graph
----
-```{r}
+### Problem 7. smoothing the graph
+```{r message=FALSE, warning=FALSE}
 ggplot(pf, aes(tenure, prop_initiated)) +
   geom_smooth(aes(color = year_joined.bucket))
 ```
 
----
-Problem 8~9. data analysis
----
+### Problem 8~9. data analysis
 ```{r}
 mean(subset(pf, year_joined.bucket == '(2012,2014]' &
               !is.na(prop_initiated))$prop_initiated)
 ```
-=> Because they joined later, there were already so many other members before them that the newcomers had these existing members to send friendship requests to while the other members already had enough number of friends.
 
----
-Problem 10. scatter plot of price/carat ratio
----
+Because they joined later, there were already so many other members before them that the newcomers had these existing members to send friendship requests to while the other members already had enough number of friends.
+
+### Problem 10. scatter plot of price/carat ratio
 ```{r}
 ggplot(diamonds, aes(cut, price / carat)) +
   geom_point(aes(color = color), 
