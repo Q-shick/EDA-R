@@ -3,7 +3,7 @@ Mini-Project Series II: The History Of Hourly Pay In Countries
 
 ### Introduction
 
-The series II will cover the hourly pay data in different countries. Unlike the series I, another variable time will bring to plots. Since the hourly compensation data from [Gap Minder](https://www.gapminder.org/data/) displays its values in years, they can be easily plotted by year. First, scatter plot will show all the individual values in detail and second, line plot will condense the scatter plot by statistical method like mean or median to show overall trends. As with series I, the countries will be classified into a certain group to make clear of the difference among countries.
+The series II will cover the hourly pay data in different countries. Unlike the series I, another variable 'Time' will brought to plots. Since the hourly compensation data from [Gap Minder](https://www.gapminder.org/data/) displays its values in years, they can be easily plotted by year. First, scatter plot will show all the individual values in detail and second, line plot will condense the scatter plot by statistical method like mean or median to show overall trends. As with series I, the countries will be classified into a certain group to make clear of the difference among countries.
 
 ### Import libraries
 
@@ -100,7 +100,7 @@ hourly_pay_smooth + theme(axis.text.x = element_text(angle = 45)) +
 
 ![](lesson4_mini-project_files/figure-markdown_github/unnamed-chunk-6-1.png)
 
-The upward Overall trend can be confirmed again in the graph. But the correlation between hourly pay and time is not impressively high enough. This would be probably due to the variation as the dots are spread widely.
+The upward overall trend can be seen again in the graph. But the correlation between hourly pay and time is not impressively high enough. This would be probably due to the variation as the dots are spread widely.
 
 ``` r
 cor.test(hourly_pay$year, hourly_pay$hourly_pay)
