@@ -4,7 +4,7 @@ output: github_document
 ---
 
 ### Introduction
-CO2 emission has been an issue for a long time since people started to raise concern about the climate change. Total CO2 emission keeps increasing as a result of developing economy. For that reason, CO2 kg per USD could be a great measure to take into account how each country makes a contribution to controlling CO2 emission while it develops the economy. Utilizing the data set from [Gap Minder](https://www.gapminder.org/data/), I will first see how countries are distributed with CO2 kg per USD to find some changes in the past and now. Then, I will make use of scatter plot, based on which I will investigate certain countries and why they are showing the patterns. Lastly, I will group them by income class and study the relationship between CO2 kg per USD and GDP/capita.
+CO2 emission has been an issue for a long time since people started to raise concerns about the climate change. Total CO2 emission keeps increasing as a result of developing economy. For that reason, CO2 kg per USD could be a great measure to take into account how each country makes a contribution to controlling CO2 emission while it develops the economy. Utilizing the data set from [Gap Minder](https://www.gapminder.org/data/), I will first see how countries are distributed with CO2 kg per USD to find some changes in the past and now. Then, I will make use of scatter plot, based on which I will investigate certain countries and why they are showing the patterns. Lastly, I will group them by income class and study the relationship between CO2 kg per USD and GDP/capita.
 
 ### Import libraries
 ```{r setup, include=FALSE}
@@ -27,7 +27,7 @@ co2_per_usd <- drop_na(co2_per_usd)
 colnames(co2_per_usd)[1] <- 'country'
 ```
 
-Along with the CO2 kg per USD data, I will reuse the GDP/capita data from the series I. The purpose is to investigate CO2 kg per USD trend by GDP/capita class in the later part of the study.
+Along with the CO2 kg per USD data, I will reuse the GDP/capita data from Series I. The purpose is to investigate CO2 kg per USD trend by GDP/capita class in the later part of the study.
 
 [PPP](http://www.who.int/choice/costs/ppp/en/)
 
@@ -72,11 +72,11 @@ grid.arrange(co2_per_usd_1980, co2_per_usd_2008, ncol = 1)
 Many of the countries have moved within 0.4 kg range after about three decades. Especially the number of countries ranged between 0.15 kg and 0.25 kg increased remarkably when the counts of 0.1 kg and less stayed almost the same. The situation in over 0.7 kg has improved a bit with counts decreased but their share from the total is so small as to be negligible. This all implies that the change during the period is mostly from the shift in the range of 0.15 kg to 0.45 kg.
 
 ```{r}
-co2_per_usd_2008 + scale_x_log10() +
+co2_per_usd_2008 + xlab("CO2 kg per USD in Log") + scale_x_log10() +
   scale_y_continuous(limits = c(0, 15), breaks = seq(0, 15, 5))
 ```
 
-Put into the log format, it looks more normalized than the original. This suggests that the original form is positively skewed, that is, many of the countries are gathered in the left of the histogram. Easily speaking, most of the countries emit small amount of CO2 kg per USD. This can be understood not only by the histograms but by statistics as below.
+Put into the log format, it looks more normalized than the original. This suggests that the original form is positively skewed, that is, many of the countries are gathered in the left of the histogram. Easily speaking, most of the countries emit small amounts of CO2 kg per USD. This can be understood not only by the histograms but by statistics as below.
 
 ```{r}
 summary_1980 <- summary(co2_per_usd$X1980)
@@ -86,7 +86,7 @@ cat("\tMin\t   1st Qu.   Median    Mean\t3rd Qu.\t  Max\n", "1980: ",
     summary_1980, "\n\n", "2008: ", summary_2008)
 ```
 
-In both years, the medians are smaller than the means to prove them positively skewed. The numbers in the statistics of 2008 all decreased down from those of 1980. This seems to be a good news to the environment, however, there is a need of further examinations to figure how it is improved.
+In both years, the medians are smaller than the means to prove them positively skewed. The numbers in the statistics of 2008 all decreased down from those of 1980. This seems to be good news to the environment, however, there is a need of further examinations to figure how it is improved.
 
 # Scatter Plot of CO2 kg per USD by Year
 ```{r}
@@ -123,8 +123,8 @@ cat(" [Countries over 1.0 CO2 kg per USD in 1980]\n",
     as.character(countries_over_1.0_2008), "\n\n")
 ```
 
-The most noticeable country is [Trinidad and Tobago](https://en.wikipedia.org/wiki/Economy_of_Trinidad_and_Tobago) appearing in all three queries. Industry accounts for almost half the country's economy and the biggest sector of Trinidad and Tobago industry is related to energy such as petroleum, natural gas, and chemical production. This must have a connection with air quality in the carribean island. Unlike the expectation that China known for the largest CO2 emission, the country is not seen in the list of 2008 and this led me to a further investigation. According to the [Total CO2 amount emission in China](https://en.wikipedia.org/wiki/List_of_countries_by_carbon_dioxide_emissions#/media/File:Carbon_dioxide_emissions_due_to_consumption_in_China.png), the amount increased almost in all periods with a sharp rise after year 2000. This provides an idea that China economically grew quickly enough for much higher PPP. It is reasonable to speculate that China developed industries and suceeded to grow the economy to overcome a great deal of CO2 emission.
-Another country to look into is Bugaria. I noticed that the neighboring country Romania was also one of the heavy CO2 emission countries in 80's and broadened the investigation to the Eastern Europe. What I found is that these countries were under control of the Soviet Union at that time. The union aggressively built tons of factories in the [Balkans](https://en.wikipedia.org/wiki/Balkans) and manufactured massive products as the name of planned economy. Especially, a number of power plants and metallurgical smelters were built in [Bulgaria](https://en.wikipedia.org/wiki/Industry_of_Bulgaria) that later came to a stop with other manufacturing plants for a long time to come due to the dismissal of the Communist Regime.
+The most noticeable country is [Trinidad and Tobago](https://en.wikipedia.org/wiki/Economy_of_Trinidad_and_Tobago) appearing in all three queries. Industry accounts for almost half the country's economy and the biggest sector of Trinidad and Tobago industry is related to energy such as petroleum, natural gas, and chemical production. This must have a connection with air quality in the Carribean islands. Unlike the expectation that China is known for the largest CO2 emission, the country is not seen in the list of 2008 and this led me to a further investigation. According to the [Total CO2 amount emission in China](https://en.wikipedia.org/wiki/List_of_countries_by_carbon_dioxide_emissions#/media/File:Carbon_dioxide_emissions_due_to_consumption_in_China.png), the amount increased almost in all periods with a sharp rise after year 2000. This provides an idea that China economically grew quickly enough for a much higher PPP. It is reasonable to speculate that China developed industries and suceeded to grow the economy to overcome a great deal of CO2 emission.
+Another country to look into is Bulgaria. I noticed that the neighboring country, Romania was also one of the heavy CO2 emission countries in 80's and broadened the investigation to Eastern Europe. What I found is that these countries were under control of the Soviet Union at that time. The union aggressively built tons of factories in the [Balkans](https://en.wikipedia.org/wiki/Balkans) and manufactured massive products as the name of planned economy. Especially, a number of power plants and metallurgical smelters were built in [Bulgaria](https://en.wikipedia.org/wiki/Industry_of_Bulgaria) that later came to a stop with other manufacturing plants for a long time due to the dismissal of the Communist Regime.
 
 ```{r}
 # how much reduced in 1980~2008
@@ -156,9 +156,9 @@ The top five countries are small and/or young and they are relatively wealthy in
 print(least_reduction_countries)
 ```
 
-Seychelles, Grenada, and Mauritius are small countries with a common history that they became independent from western countries in the 1960~1970's. Another in common is that they are all islands having their decent economy largely dependent on tourism. So, I could reach to an assumption that the rises of CO2 emission for these three are not from manufacturing industry but something else like regulations.
-I found that they are very similar with the Bahamas in that they are all non-annex parties to the [UNFCCC](https://en.wikipedia.org/wiki/List_of_parties_to_the_United_Nations_Framework_Convention_on_Climate_Change). However, I also learned that only the Bahamas is geographically close to a developed country, the USA, while Seychelles and Mauritius are off African continent, Grenada very close to Trinidad and Tobago in the Carribean ocean. In fact, the Bahamas is extremely dependent on USA for the trade and this might have influenced on the islands' CO2 control initiatives.
-Benin and Republic of Congo are countries in Africa, both exporting oil just like UAE and Saudi Arabia. Nepal and Bangladesh are developing very quickly after the end of 20th century.
+Seychelles, Grenada, and Mauritius are small countries with a common history that they became independent from western countries in the 1960~1970's. Another aspect in common is that they are all islands having their decent economy largely dependent on tourism. So, I could reach to an assumption that the rises of CO2 emission for these three are not from manufacturing industry but something else like regulations.
+I found that they are very similar with the Bahamas in that they are all non-annex parties to the [UNFCCC](https://en.wikipedia.org/wiki/List_of_parties_to_the_United_Nations_Framework_Convention_on_Climate_Change). However, I also learned that only the Bahamas is geographically close to a developed country, the USA, while Seychelles and Mauritius are off the African continent, Grenada very close to Trinidad and Tobago in the Carribean ocean. In fact, the Bahamas is extremely dependent on the USA for the trade and this might have influenced on the islands' CO2 control initiatives.
+Benin and Republic of Congo are countries in Africa, both exporting oil just like the UAE and Saudi Arabia. Nepal and Bangladesh are developing very quickly after the end of the 20th century.
 
 [Bahamas Trade](https://atlas.media.mit.edu/en/profile/country/bhs/)
 
@@ -177,7 +177,7 @@ co2_per_usd_line <- ggplot(co2_per_usd_year) +
 co2_per_usd_line + scale_color_discrete(name = NULL, labels = c("Mean", "Median"))
 ```
 
-Once again, the fact that the mean is above the median is telling that the distribution is skewed with certain countries emitting a lot of CO2 kg per USD. Both the lines are going down as time progresses, though. Now that it looks evident that the relationship between CO2 kg per USD and year, the correlation comes as below. They are highly related in a good way for environment.
+Once again, the fact that the mean is above the median is telling that the distribution is skewed with certain countries emitting a lot of CO2 kg per USD. Both the lines are going down as time progresses, though. Now that it looks evident that the relationship between CO2 kg per USD and year, the correlation comes as below. They are highly related in that the environment is improved.
 
 ```{r}
 corr_co2_time_mean <- with(co2_per_usd_year, cor.test(year, co2_mean))
@@ -197,7 +197,7 @@ co2_per_usd_gdp_capita_scatter + scale_x_continuous(breaks = seq(1980, 2008, 5))
                        labels = c("Upper", "Upper Middle", "Lower Middle", "Lower"))
 ```
 
-Most of the developed countries are deeply involved in the climate change treaties. This should be why I see pink dots (Upper) around y = 0.5. However, these rich countries are the ones that consume most energy resources and this could explain why pink dots are not under a certain level and purple dots (Lower) are right above the bottom. Middle classes are spread but almost every above 1.0 is green (Upper Middle) or blue (Lower Middle). These countries have been developing so fast that they must have built a number of factories and still. They didn't have to make contributions to CO2 reduction as observers of climate change associations.
+Most of the developed countries are deeply involved in the climate change treaties. This should be why I see pink dots (Upper) around y = 0.5. However, these rich countries are the ones that consume the most energy resources and this could explain why pink dots are not under a certain level and purple dots (Lower) are right above the bottom. Middle classes are spread but almost every above 1.0 is green (Upper Middle) or blue (Lower Middle). These countries have been developing so fast that they must have built a number of factories and still continue to do so. They didn't have to make contributions to CO2 reduction as observers of climate change associations.
 
 ```{r}
 co2_per_usd_gdp_capita_facet <- co2_per_usd_melt %>%
@@ -216,7 +216,7 @@ co2_per_usd_gdp_capita_facet_line <- ggplot(co2_per_usd_gdp_capita_facet) +
 co2_per_usd_gdp_capita_facet_line + scale_x_continuous(breaks = seq(1980, 2008, 5))
 ```
 
-The facet plots help a lot understand which group made how much contributions. First, Upper class made the most dedication to reducing CO2 kg per USD. This must be because they had enough wealth to make changes after climate regulations took effect. As for Lower Middle class with the declining trend, they are mostly Latin American countries of which GDP have not been enlarged as much. It can be inferred from this that the decline in Lower Middle class is likely from sluggish growth which led to less CO2 emission. On the contrary, Upper Middle class obviously with no change are mostly East Asian countries of which GDP have expanded a lot in the period. Lastly, Lower class showing the similar pattern with Upper Middle class are undeveloped nations. They have been always countries with the least CO2 emission per USD, suggesting that their economy has not grown that much.
+The facet plots help a lot to understand which group made how much contributions. First, Upper class made the most dedication to reducing CO2 kg per USD. This must be because they had enough wealth to make changes after climate regulations took effect. As for Lower Middle class with the declining trend, they are mostly Latin American countries of which the GDP has not been enlarged as much. It can be inferred from this that the decline in Lower Middle class is likely from sluggish growth which led to relatively less CO2 emission. On the contrary, Upper Middle class obviously with no change are mostly East Asian countries of which the GDP have expanded a lot in the period. Lastly, Lower class showing the similar pattern with Upper Middle class are undeveloped nations. They have been always countries with the least CO2 emission per USD, suggesting that their economy has not grown that much.
 
 [EU/East Asis/Latin America Comparison from World Bank Data](https://data.worldbank.org/?locations=ZJ-EU-4E)
 
