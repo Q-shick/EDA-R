@@ -3,7 +3,7 @@ Mini-Project Series II: The History Of Hourly Pay In Countries
 
 ### Introduction
 
-The series II will cover the hourly pay data in different countries. Unlike the series I, another variable 'Time' will brought to plots. Since the hourly compensation data from [Gap Minder](https://www.gapminder.org/data/) displays its values in years, they can be easily plotted by year. First, scatter plot will show all the individual values in detail and second, line plot will condense the scatter plot by statistical method like mean or median to show overall trends. As with series I, the countries will be classified into a certain group to make clear of the difference among countries.
+Series II will cover the hourly pay data in different countries. Unlike Series I, another variable 'Time' will be brought to plots. Since the hourly compensation data from [Gap Minder](https://www.gapminder.org/data/) displays its values in years, they can be easily plotted by year. First, scatter plots will show all the individual values in detail. Second, line plots will condense scatter plots by statistical method like mean or median to show overall trends. As with series I, the countries will be classified into a certain group to make clear of the difference among countries.
 
 ### Import libraries
 
@@ -48,7 +48,7 @@ grid.arrange(p_1980, p_2006, ncol = 1)
 
 ![](lesson4_mini-project_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-As expected, most of the countries moved out of 0~10 USD range up to 12, 20, even over 40 USD. Interesting point is that there are more countries in 6 USD sector in 2006 than in 1980. Considering a great drop in 8~12 USD range in 2006, it is suspected that countries in 0~4 USD range in 1980 have moved up to 8 USD during which the countries in 8~12 USD range in 1980 are now dispersed onto a wide range between 14~42 USD.
+As expected, most of the countries moved out of 0~10 USD range up to 12, 20, even over 40 USD. An interesting point is that there are more countries in 6 USD sector in 2006 than in 1980. Considering a great drop in 8~12 USD range in 2006, it is suspected that countries in 0~4 USD range in 1980 have moved up to 8 USD during which the countries in 8~12 USD range in 1980 are now dispersed onto a wide range between 14~42 USD.
 
 ### Scatter Plot of Hourly Pay by Year
 
@@ -83,7 +83,7 @@ hourly_pay_scatter + theme(axis.text.x = element_text(angle = 45)) +
 
 ![](lesson4_mini-project_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
-The green line is the mean which has a gentle upward trend over time. The dotted blue line in the top area is 80% quantile. These are mostly European countries that experienced a slight drop in the late 1990's and early 2000's when the Euro system was introduced as one possible reason to explain why. Another dotted line in the bottom is 20% quantile. This has almost no slope from 1980 to 2006 but the growth is actually from somewhere around 2.5 USD to over 6 USD, roughly as same proportional jump as developed countries grew from 10 USD to 30 USD. However, the size of the gap between developed and undeveloped nations became even bigger, approximately from 8 USD in 1980 to 20 USD in 2006.
+The green line is the mean which has a gentle upward trend over time. The dotted blue line in the top area is 80% quantile. These are mostly European countries that experienced a slight drop in the late 1990's and early 2000's when the Euro system was introduced, which is one possible reason to explain the decline. Another dotted line in the bottom is 20% quantile. This has almost no slope from 1980 to 2006 but the growth is actually from somewhere around 2.5 USD to over 6 USD, roughly as the same proportional jump as developed countries grew from 10 USD to 30 USD. However, the size of the gap between developed and undeveloped nations became even bigger, approximately from 8 USD in 1980 to 20 USD in 2006.
 
 [This USD/EUR graph looks similar with the 80% quantile line in '99~'06 to get some idea](https://commons.wikimedia.org/wiki/File:USD-EUR_1999-.png)
 
@@ -186,4 +186,4 @@ Recalling that the class variable is set by the hourly pay in 1997, it is notewo
 
 ### Conclusion
 
-It is a well known fact that people get paid more in developed countries and the opposite in undeveloped countries. However, it is surprising the gap between the groups are growingly bigger than ever even if all groups grew approximately triple times in 2006 compared to 1980. In short, the hourly pay groups are diverging. Another thing is well known is that the GDP/capita growth rate is usually higher in undeveloped countries. This is also what is partly found in the series I. However, the growth rate of hourly pay among countries look the same or a little higher in rich countries. To interpret the two results together, hourly pay raise didn't catch GDP/capita raise in undeveloped countries. In other words, it could be said that productivity of labor is not improved as much as economy is now bigger in these countries.
+It is a well known fact that people get paid more in developed countries and the opposite in undeveloped countries. However, it is surprising the gap between the groups are steadily bigger than ever even if all groups grew approximately triple times in 2006 compared to 1980. In short, the hourly pay groups are diverging. Another well known aspect is that the GDP/capita growth rate is usually higher in undeveloped countries. This is also what is partly found in Series I. However, the growth rate of hourly pay among countries look the same or a little higher in rich countries. To interpret the two results together, hourly pay raise didn't catch GDP/capita raise in undeveloped countries. In other words, it could be said that productivity of labor has not been improved or that the distribution of wealth has not been realized as much as economy became larger.
