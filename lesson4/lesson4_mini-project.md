@@ -1,6 +1,10 @@
 Mini-Project Series II: The History Of Hourly Pay In Countries
 ================
 
+[Series I: The Trends of GDP/capita By Country](https://github.com/Q-shick/EDA-R/blob/master/lesson3/lesson3_mini-project.md)
+
+[Series III: CO2 kg Per USD And The Relationship With GDP/capita](https://github.com/Q-shick/EDA-R/blob/master/lesson5/lesson5_mini-project.md)
+
 ### Introduction
 
 Series II will cover the hourly pay data in different countries. Unlike Series I, another variable 'Time' will be brought to plots. Since the hourly compensation data from [Gap Minder](https://www.gapminder.org/data/) displays its values in years, they can be easily plotted by year. First, scatter plots will show all the individual values in detail. Second, line plots will condense scatter plots by statistical method like mean or median to show overall trends. As with series I, the countries will be classified into a certain group to make clear of the difference among countries.
