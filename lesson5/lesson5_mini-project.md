@@ -1,6 +1,10 @@
 Mini-Project Series III: CO2 kg Per USD And The Relationship With GDP/capita
 ================
 
+[Series I: The Trends of GDP/capita By Country](https://github.com/Q-shick/EDA-R/blob/master/lesson3/lesson3_mini-project.md)
+
+[Series II: The History Of Hourly Pay In Countries](https://github.com/Q-shick/EDA-R/blob/master/lesson4/lesson4_mini-project.md)
+
 ### Introduction
 
 CO2 emission has been an issue for a long time since people started to raise concerns about the climate change. Total CO2 emission keeps increasing as a result of developing economy. For that reason, CO2 kg per USD could be a great measure to take into account how each country makes a contribution to controlling CO2 emission while it develops the economy. Utilizing the data set from [Gap Minder](https://www.gapminder.org/data/), I will first see how countries are distributed with CO2 kg per USD to find some changes in the past and now. Then, I will make use of scatter plot, based on which I will investigate certain countries and why they are showing the patterns. Lastly, I will group them by income class and study the relationship between CO2 kg per USD and GDP/capita.
