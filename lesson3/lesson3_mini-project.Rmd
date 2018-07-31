@@ -3,6 +3,10 @@ title: "Mini-Project Series I: The Trends of GDP/capita By Country"
 output: github_document
 ---
 
+[Series II: The History Of Hourly Pay In Countries](https://github.com/Q-shick/EDA-R/blob/master/lesson4/lesson4_mini-project.md)
+
+[Series III: CO2 kg Per USD And The Relationship With GDP/capita](https://github.com/Q-shick/EDA-R/blob/master/lesson5/lesson5_mini-project.md)
+
 ### Introduction
 The goal of this project series is to explore some macro economic data mostly by visualizing for analysis. For that, there will be a lot of data processing such as creating new variables as well as handling incomplete information. The first topic of the series is about GDP/capita which is one of the well-known economic measures and is what I personally look at when surveying a country. The data set from [Gap Minder](https://www.gapminder.org/data/) is a matrix with inflation-adjusted GDP/capita from 1960 to 2011 for plenty of countries. Histograms of the past and the present will be drawn to see how the countries have grown in the long term. For the recent trends, I will calculate the growth rate in recent five years for each nation to see at what rate most countries have grown and which country grew the most and the least. Lastly, the countries will be classified into three groups by GDP/capita and will be visualized to show any trend they have.
 
@@ -46,7 +50,7 @@ p_2011 <- ggplot(aes(x = X2011), data = subset(gdp_capita, !is.na(X1960))) +
 grid.arrange(p_1970, p_2011, ncol = 1)
 ```
 
-Unlike in 1970, there are many countries with GDP/capita over 20,000 USD in 2011. However, there are still many remaining under 2,000 USD. In conclusion, it can be said that the GDP/capita has moved up in the last a few decades but the disparity among the countries also grew.
+Unlike in 1970, there are many countries with GDP/capita over 20,000 USD in 2011. However, there are still many remaining under 2,000 USD. In conclusion, it can be said that the GDP/capita has moved up in the last few decades but the disparity among the countries also grew.
 
 ```{r}
 gdp_capita$Country[gdp_capita$X2011 > 50000 & !is.na(gdp_capita$X2011)]
@@ -113,7 +117,7 @@ gdp_capita_5yr_class + scale_color_discrete(name = "")
   scale_x_continuous(limits = c(-30, 70), breaks = seq(-30, 70, 5))
 ```
 
-The GDP/capita can be classified as 'Upper', 'Middle', 'Under'. With just three simple line plots, it is now clear that the five years were the time when developed countries suffered while undeveloped countries had chance to grow. This can be yet again confirmed with the box plot where undeveloped countries have grown in the 5 years the most.
+The GDP/capita can be classified as 'Upper', 'Middle', 'Under'. With the three simple line plots, it is now clear that the five years were the time when developed countries suffered while undeveloped countries had chances to grow. This can be yet again confirmed with the box plot where undeveloped countries have grown in the five years the most.
 
 ```{r}
 ggplot(aes(x = class ,y = growth_rate), data = gdp_capita_5yr) +
@@ -122,4 +126,4 @@ ggplot(aes(x = class ,y = growth_rate), data = gdp_capita_5yr) +
 
 ### Conclusion
 
-The fact found through the histogram comparison is that there are still so many countries remaining under GDP/capita 2,000 USD group while the number of countries in other groups becomes smaller as the GDP/capita increases. But it is also true that most of the countries grew over a long time period. In the short term, some undeveloped countries could grow remarkably while most developed countries struggled during the recent years as seen in the five years growth analysis.
+The fact found through the histogram comparison is that there are still so many countries remaining under GDP/capita 2,000 USD group while the number of countries in other groups becomes smaller as the GDP/capita increases. But it is also true that most of the countries grew over a long time period. In the short term, some undeveloped countries could grow remarkably while most developed countries struggled during the recent years as seen in the five year growth analysis.
