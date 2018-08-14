@@ -78,7 +78,7 @@ ggplot(diamonds, aes(volume, price)) +
 ```
 
 ### Problem 10. interpreting price vs. volume
-The price vs. volume is in proportional relationship with the limited number of outliers. With the sharp slope, the price goes up a lot for every unit increment of the volume.
+The "Price vs. Volume" is in proportional relationship with the limited number of outliers. With the sharp slope, the price goes up a lot for every unit increment of the volume.
 
 ##### Extra Note. diamonds with 0 volume
 ```{r}
