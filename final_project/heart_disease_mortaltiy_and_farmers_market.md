@@ -6,19 +6,19 @@ Heart Disease Mortality And Farmer's Market
 
 ### Abstract
 
-I explore the data sets, 'Heart Disease Mortality' and 'Farmer's Market In The US', to study the relationship between them. The goal of this project is to capture a possible link of farmer's markets to heart disease mortality.
+I explore the data sets, <i>Heart Disease Mortality</i> and <i>Farmer's Market In The US</i>, to study the relationship between them. The goal of this project is explore data sets to capture a possible link of farmer's market data to heart disease mortality.
 
 ### Introduction
 
-The Center For Disease Control And Prevention provides the data set 'Heart Disease Mortality Data Among US Adults (35+) by State/County in 2014' which is downloadable at <a href='https://catalog.data.gov/dataset/heart-disease-mortality-data-among-us-adults-35-by-state-territory-and-county-5fb7c'>DATA.GOV</a>. This data set contains the numbers of deaths from <a href='http://www.heart.org/HEARTORG/Conditions/What-is-Cardiovascular-Disease_UCM_301852_Article.jsp#.Wz57p9JKjIU'>Cardiovascular Disease</a>, also simply called heart disease, every 100,000 population by gender and race in state/county level. Another data set 'Farmer's Market In The US' is procured from The United States Department of Agriculture at <a href='https://www.ams.usda.gov/services/local-regional/farmers-markets-and-direct-consumer-marketing'>USDA</a>. 8.7k+ Farmer's markets are listed with information of state, exact locations and items. Even though the farmer's market data is collected between 2011 and 2018, most of the data was updated in 2015 which is almost the same year of that of the heart disease data. Also considering the small variability of the data over time, therefore, these two data sets can be compared without any serious errors.
+The Center For Disease Control And Prevention provides the data set 'Heart Disease Mortality Data Among US Adults (35+) by State/County in 2014' which is downloadable at <a href='https://catalog.data.gov/dataset/heart-disease-mortality-data-among-us-adults-35-by-state-territory-and-county-5fb7c'>DATA.GOV</a>. This data set contains the numbers of deaths from <a href='http://www.heart.org/HEARTORG/Conditions/What-is-Cardiovascular-Disease_UCM_301852_Article.jsp#.Wz57p9JKjIU'>Cardiovascular Disease</a>, also simply called heart disease, every 100,000 population by gender and race in state/county level. Another data set 'Farmer's Market In The US' is procured from The United States Department of Agriculture at <a href='https://www.ams.usda.gov/services/local-regional/farmers-markets-and-direct-consumer-marketing'>USDA</a>. 8.7k+ Farmer's markets are listed with information of state, exact locations and items. Even though the farmer's market data are collected between 2011 and 2018, most of the data was updated in 2015 which is almost the same year of that of the heart disease data.
 
-I will be studying these data to discover trends of which states have more or less heart disease mortality and whether the states have a relationship with the number of farmer's markets. The importance of these questions stem from the fact that the number one cause of death in the US is none other than heart diseases.
+I will be studying these data to discover trends of which states have high or low heart disease mortality and whether the states have a relationship with the number of farmer's markets. The importance of these questions stem from the fact that the number one cause of death in the US is none other than heart diseases.
 
-It has been talked a lot about what causes heart diseases such as diet habits as interests in organic/fresh foods have been growing fast. Although people now believe that bad diets could cause heart diseases thanks to researches and education, there lacks the reverse thoughts of reducing the risks with good diets.
+It has been talked a lot about what causes heart diseases. Although people now believe that bad diets could cause heart diseases thanks to a number of researches and education, there lacks the reverse thoughts for good diets that might reduce risks of heart disease. In that sense, farmer's market could be a useful indicator as good diets because it is regarded as fresh and healthy.
 
-First step to answer these questions is to explore the data sets individually. I will look into the data, one by one, to see how they are distributed and visualize on the US map to gain some ideas where heart diseases or farmer's markets are found the most and least.
+First step is explore the data sets, separately. I will look into the data, one by one, to see how they are distributed and visualize on the US map to gain some ideas where heart disease mortality or farmer's markets are found the most and least.
 
-Second, I will join the two data sets to find a pattern between the heart disease mortality and the number of farmer's markets. This will be shown on the map for better understanding. The anticipated result is that the mortality is found to be lower where there are many farmer's markets than where there are less.
+Second, I will join the two data sets to find relationships between the heart disease mortality and the number of farmer's markets. This will be shown on the map for better understanding. The anticipated result is that the mortality is lower where there are many farmer's markets than where there are less.
 
 ------------------------------------------------------------------------
 
@@ -36,7 +36,9 @@ library(maps)
 library(mapdata)
 ```
 
-#### Define Function
+#### Define Functions
+
+The data sets I will use come in different formats. State names are one of those and I need to set a rule for them to merge the data sets. Classifying the states for this follows [The US Census Region](https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf).
 
 ``` r
 # state names
@@ -53,12 +55,13 @@ WE <- c("AZ","CO","ID","NM","MT","UT","NV","WY","CA","OR","WA")
 region_list <- list(Northeast = NE, Midwest = MW, South = SO, West = WE)
 ```
 
-Classifying the states follows [The US Census Region](https://www2.census.gov/geo/pdfs/maps-data/maps/reference/us_regdiv.pdf). These groups give a more intuitive idea to roughly understand which areas have the highest mortality and which areas do not.
+The US Census Region also specifies how the states are grouped into four different regions. The following function will do the job.
 
 ``` r
+# four regions
 region_division <- function(state) {
   if (state %in% NE) {
-    return("North East")
+    return("Northeast")
   } else if (state %in% MW) {
     return("Midwest")
   } else if (state %in% SO) {
@@ -69,12 +72,15 @@ region_division <- function(state) {
 }
 ```
 
+States and counties are the variables on which merge will be based on. They should be thoroughly examined and processed through the single function.
+
 ``` r
 process_region <- function(df, state_list) {
   # state name for merging
   df$state <- state.name[match(trimws(df$state), state_list)]
   df$state <- tolower(df$state)
   df <- df[which(df$state != "alaska" & df$state != "hawaii"), ]
+
   # state abbreviation for text on axis
   df$state_abb <- state.abb[match(df$state, state.name)]
   df$state_abb <- factor(df$state_abb)
@@ -110,13 +116,12 @@ process_region <- function(df, state_list) {
 
 ``` r
 # audit values
-
 # df <- df[complete.cases(df), ]
 ```
 
 #### Load and Process the Data set
 
-First, I need to read the Heart Disease Mortality data set and modify it to fit the format in which common variables are refined and named the same with the Farmer's market data set. Some other process here includes dropping variables such as race and gender. These could be useful for other analysis but not for the subject of this project.
+First, I need to read Heart Disease Mortality and modify it to fit the format in which common variables are refined and named the same with Farmer's market. Some other process here includes dropping variables such as race and gender. These could be useful for other analysis but not for the subject of this project. I will use only the overall figures, instead.
 
 ``` r
 # load heart disease mortality data
@@ -133,23 +138,20 @@ colnames(heart_mortality) <- c('state', 'county', 'mortality',
 # process regional columns
 heart_mortality <- process_region(heart_mortality, state.abb)
 
-# mortality with "Overall" only
-heart_mortality <- heart_mortality[(heart_mortality$gender == "Overall") 
-                & (heart_mortality$race == "Overall"), ]
-heart_mortality <- heart_mortality[, -c(4, 5)]
-
 # show structure
 str(heart_mortality)
 ```
 
-    ## 'data.frame':    3109 obs. of  5 variables:
+    ## 'data.frame':    30810 obs. of  7 variables:
     ##  $ state    : Factor w/ 49 levels "alabama","arizona",..: 1 1 1 1 1 1 1 1 1 1 ...
     ##  $ county   : Factor w/ 1795 levels "abbeville","acadia",..: 144 79 86 96 159 217 227 238 284 305 ...
     ##  $ mortality: num  434 425 384 494 416 ...
+    ##  $ gender   : Factor w/ 3 levels "Female","Male",..: 3 3 3 3 3 3 3 3 3 3 ...
+    ##  $ race     : Factor w/ 6 levels "American Indian and Alaskan Native",..: 5 5 5 5 5 5 5 5 5 5 ...
     ##  $ state_abb: Factor w/ 49 levels "AL","AR","AZ",..: 1 1 1 1 1 1 1 1 1 1 ...
-    ##  $ division : Factor w/ 4 levels "Midwest","North East",..: 3 3 3 3 3 3 3 3 3 3 ...
+    ##  $ division : Factor w/ 4 levels "Midwest","Northeast",..: 3 3 3 3 3 3 3 3 3 3 ...
 
-Next, the Farmer's Market data set is read and processed in the same way. The data set has a number of categorical variables of items that farmer's markets sell. Many of the items like tobu are so limitedly available as to be dropped. At last, the items that are general but can indicate freshness and organicity of a farmer's market are selected.
+Next, Farmer's Market is read and processed in the same way. The data set has a number of categorical variables of items that each farmer's markets sells. This will be used as a qualitative aspect while number of farmer's market as a quantative aspect. I will give each available item a point. Although there could be better criteria to score them, I choose this simple system for the nature of the project that is exploring the data, not modeling.
 
 ``` r
 # load farmer's market data set
@@ -159,6 +161,7 @@ farmers_market <- read.csv('../Data/Farmers_Markets_by_County.csv')
 farmers_market <- farmers_market[, -c(1:9, 12:20, 23, 29, 59)]
 farmers_market <- farmers_market[farmers_market$County != "", ]
 farmers_market <- farmers_market[!is.na(farmers_market$x), ]
+
 # change column names
 colnames(farmers_market)[1:4] <- c('county', 'state', 'long', 'lat')
 colnames(farmers_market) <- tolower(colnames(farmers_market))
@@ -166,16 +169,6 @@ colnames(farmers_market) <- tolower(colnames(farmers_market))
 # process regional columns
 farmers_market$state <- tolower(farmers_market$state)
 farmers_market <- process_region(farmers_market, state.name)
-
-# one point for each item available
-farmers_market$score <- 0
-for (r in 1:nrow(farmers_market)) {
-  for (c in 5:38) {
-    if (farmers_market[r, c] == "Y") {
-      farmers_market$score[r] = farmers_market$score[r] + 1
-    }
-  }
-}
 
 # show structure
 str(farmers_market[1:10])
@@ -193,76 +186,123 @@ str(farmers_market[1:10])
     ##  $ snap      : Factor w/ 2 levels "N","Y": 1 1 1 1 2 2 2 2 2 2 ...
     ##  $ bakedgoods: Factor w/ 2 levels "N","Y": 2 2 2 2 2 2 1 2 2 1 ...
 
-Lastly, the population data set is brought as a supplement. Because the heart disease mortality is based on 2014, it would make the best sense to remove other years from the population matrix. Also, county and state should be seperated to be aligned with the other data sets.
-
-``` r
-# load population data set
-population_county <- read.csv('../Data/PEP_2014_PEPANNRES_with_ann.csv')
-
-# select and change column names
-population_county <- population_county[-1, c(3, 10)]
-colnames(population_county) <- c('geo_name', 'population')
-
-# process regional columns
-population_county$geo_name <- tolower(population_county$geo_name)
-geo_split <- strsplit(as.character(population_county$geo_name), split = ',')
-population_county$county <- sapply(geo_split, '[', 1)
-population_county$state <- sapply(geo_split, '[', 2)
-population_county <- process_region(population_county, state.name)
-
-# add population column onto farmer's market data set
-population_county$population <- with(population_county,
-                                     as.numeric(levels(population))[population])
-population_county <- population_county[, -c(1,5,6)]
-farmers_market <- merge(farmers_market, population_county,
-                        by = c("state", "county"))
-
-# show structure
-rm(geo_split)
-str(population_county)
-```
-
-    ## 'data.frame':    3108 obs. of  3 variables:
-    ##  $ population: num  55395 200111 26887 22506 57719 ...
-    ##  $ county    : Factor w/ 1796 levels "abbeville","acadia",..: 79 86 96 144 159 217 227 238 284 305 ...
-    ##  $ state     : Factor w/ 49 levels "alabama","arizona",..: 1 1 1 1 1 1 1 1 1 1 ...
+Lastly, [Population Data](https://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?src=bkmk) from US Census Bureau is brought as a supplement. Because the heart disease mortality is based on 2014, it would make the best sense to remove other years from the population matrix. Also, county and state should be seperated to be aligned with the other data sets.
 
 ------------------------------------------------------------------------
 
 ### Exploring the Data
 
-In this section, I will look into the two data sets individually to see how they are distributed and what trends they have in general before they are merged for the final analysis.
+In this section, I will look into the two data sets individually to see how they are distributed and what trends they have in general first, and then I will put them together to find relationships between the two.
 
-#### Part I: Histogram
+#### Part I: Histogram, Frequency Table, Barplot
 
-Histogram helps you understand the distribution of your data set. I focus on heart disease mortality so I want to get an idea how each county's mortality is laid out. As it turns out, it could be said that they are normally distributed. This should be noted for later use such as removal of outliers. Since it has tails on both sides, I could cut off 25% and 75% as an instance.
+Histogram helps you understand the distribution of a data set. I focus on Heart Disease Mortality so I want to get an idea how each county's mortality is laid out. I will do the similar job to Farmer's Market to answer sort of how many questions.
 
 ##### Histogram of Heart Disease Mortality
 
 ``` r
-heart_disease_overall_hist <- ggplot(heart_mortality, aes(mortality)) +
-  geom_histogram(binwidth = 20, color = 'gray', fill = 'lightblue') +
-  ggtitle("Heart Disease Mortality in the US (2014)") +
+ggplot(heart_mortality, aes(mortality)) +
+  geom_histogram(binwidth = 20, color = 'black', fill = 'blue') +
+  ggtitle("Heart Disease Mortality in the US") +
   xlab("Number of Deaths per 100,000") + ylab("Counties") +
-  scale_x_continuous(limits = c(0, 700), breaks = seq(0, 700, 100))
-
-heart_disease_overall_hist
+  scale_x_continuous(limits = c(0, 800), breaks = seq(0, 800, 100))
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-6-1.png)
-
-In fact, it is slightly skewed with the median on the left of the mean. Also, the range is quite large with the min and max set far. However, most of values seem to be normally centered, considering 1st and 3rd quantile.
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 ``` r
 summary(heart_mortality$mortality)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   108.6   298.8   349.7   362.0   411.6  1096.5
+    ##     6.0   256.8   343.2   352.3   436.4  3000.9
+
+As it turns out, it could be said that they are normally distributed. In fact, it is slightly skewed with the median on the left of the mean. Also, the range is quite large with the min and max set far from each other. Min and max must be very small counties and should probably be thrown out as outliers later for analysis.
+
+``` r
+ggplot(subset(heart_mortality, gender != "Overall"), 
+       aes(mortality, color = gender)) +
+  geom_freqpoly(bins = 100) +
+  ggtitle("Heart Disease Mortality in the US by Gender") +
+  labs(x = "Number of Deaths per 100,000", y = "Counties", color = "") +
+  scale_x_continuous(limits = c(0, 900), breaks = seq(0, 900, 100))
+```
+
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
+It is clear that male is higher in the mortality than female. Because they are distinctively different, I'd better not use 'Overall' for gender than separate male and female to compare each individually.
+
+``` r
+ggplot(subset(heart_mortality, race != "Overall"), 
+       aes(mortality, color = race)) +
+  geom_freqpoly(bins = 100) +
+  ggtitle("Heart Disease Mortality in the US by Gender") +
+  labs(x = "Number of Deaths per 100,000", y = "Counties", color = "") +
+  scale_x_continuous(limits = c(0, 800), breaks = seq(0, 800, 100))
+```
+
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-8-1.png)
+
+As with gender, race should not use 'Overall'. Easily speaking, each county has different demographic features and it will become a confounding factor if I use 'Overall'. Therefore, The analysis will be by race as well as by gender. Unlike gender, however, race has a problem that each of them has the different number of observations. That is, not all counties have the data for all races. Note that the areas under the lines are not equal.
+
+``` r
+race_breakdown <- data.frame(table(select(heart_mortality, race, division)))
+
+overall_division <- subset(race_breakdown, race == "Overall")[2:3]
+colnames(overall_division)[2] <- "Freq_overall"
+race_breakdown <- merge(race_breakdown, overall_division)
+race_breakdown$share <- with(race_breakdown, round(Freq/Freq_overall, 2))
+race_breakdown <- race_breakdown[race_breakdown$race != "Overall", -4]
+race_breakdown <- race_breakdown[order(race_breakdown$race), ]
+
+kable(race_breakdown)
+```
+
+|     | division  | race                               |  Freq|  share|
+|-----|:----------|:-----------------------------------|-----:|------:|
+| 1   | Midwest   | American Indian and Alaskan Native |   353|   0.11|
+| 7   | Northeast | American Indian and Alaskan Native |    51|   0.08|
+| 13  | South     | American Indian and Alaskan Native |   356|   0.08|
+| 19  | West      | American Indian and Alaskan Native |   577|   0.46|
+| 2   | Midwest   | Asian and Pacific Islander         |   375|   0.12|
+| 8   | Northeast | Asian and Pacific Islander         |   315|   0.48|
+| 14  | South     | Asian and Pacific Islander         |   756|   0.18|
+| 20  | West      | Asian and Pacific Islander         |   458|   0.37|
+| 3   | Midwest   | Black                              |  1129|   0.36|
+| 9   | Northeast | Black                              |   484|   0.74|
+| 15  | South     | Black                              |  3523|   0.83|
+| 21  | West      | Black                              |   424|   0.34|
+| 4   | Midwest   | Hispanic                           |   634|   0.20|
+| 10  | Northeast | Hispanic                           |   376|   0.58|
+| 16  | South     | Hispanic                           |  1534|   0.36|
+| 22  | West      | Hispanic                           |   814|   0.66|
+| 6   | Midwest   | White                              |  3165|   1.00|
+| 12  | Northeast | White                              |   651|   1.00|
+| 18  | South     | White                              |  4266|   1.00|
+| 24  | West      | White                              |  1242|   1.00|
+
+Except for 'White', the rest are differently missing in the regions. For example, only about 10% of 'American Indian and Alaskan Native' data are available in three regions but 46% in West. The same goes with 'Asian', 'Black', 'Hispanic'. Taking a close look at the data, there are such observations that do have 'Overall' but not male/female for certain races. For all these, it would be clever to focus on race with 'Overall' for the given data set, even if this is not going to rule out the racial factor.
+
+``` r
+# downsize the data set
+heart_mortality <- subset(heart_mortality, gender != 'Overall' 
+                          & race == 'Overall')
+heart_mortality <- heart_mortality[, -5]
+```
 
 ##### Highest to Lowest Heart Disease Mortality by State
 
-The plot is useful to have a rough feeling of which area shows the highest mortality and the other way around. The data set should be grouped in four areas first and then drawn by state.
+``` r
+# theme for barplot
+theme_barplot <- theme_bw() + 
+  theme(axis.text.x = element_text(size = 7, angle = 75),
+        legend.title = element_blank(),
+        legend.text = element_text(size = 10),
+        legend.position = c(0.9,0.8),
+        legend.background = element_rect(fill = alpha('white', 0)))
+```
+
+Fisrt, I like to know the mean mortality by state and also by division.
 
 ``` r
 # mean mortality by state and division
@@ -272,96 +312,35 @@ mortality_state <- heart_mortality %>%
   arrange(state_abb)
 
 # mean mortality
-mortality_state_bar <- ggplot(mortality_state, 
-                              aes(reorder(state_abb, -mortality_mean), 
-                                  mortality_mean,
-                                  fill = division)) +
+ggplot(mortality_state, aes(reorder(state_abb, -mortality_mean), 
+                            mortality_mean,
+                            fill = division)) +
   geom_bar(stat = 'identity', width = 0.5) +
   ggtitle("Mean Mortality by State") +
-  xlab("State") + ylab("Mortality")
-  
-mortality_state_bar + theme_bw() + 
-  theme(axis.text.x = element_text(size = 7, angle = 75),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 10),
-        legend.position = c(0.9,0.8),
-        legend.background = element_rect(fill = alpha('white', 0)))
+  xlab("State") + ylab("Mortality") + theme_barplot
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-12-1.png)
 
-Like seen on the bar plot, South is seemingly at highest the risk. Kentuchy comes the seventh but note that the Midwest state is right above Tennessee in South. This is a quite well-known fact regarding [racial factors](https://newsarchive.heart.org/heart-disease-kills-more-southerners-than-any-other-disease/) and [Southern diet](https://www.mensjournal.com/food-drink/what-southern-diet-actually-and-three-ways-its-killing-you/) known for a lot of meat. The regional mortality can be found again as below.
+Like seen on the bar plot, South is seemingly at highest the risk. Kentuchy comes the seventh, but note that the Midwest state is right above Tennessee in South. The followings are quite well-known facts; [Racial Factors](https://newsarchive.heart.org/heart-disease-kills-more-southerners-than-any-other-disease/) against heart disease and [Southern Diet](https://www.mensjournal.com/food-drink/what-southern-diet-actually-and-three-ways-its-killing-you/) known for a lot of meat consumption. The regional mortality can be found again as below.
 
 ``` r
 mortality_region_rank <- aggregate(mortality_state[, "mortality_mean"],
                                    list(mortality_state$division), mean)
 kable(mortality_region_rank[order(-mortality_region_rank$mortality_mean), ], 
-      col.names = c("Region", "Mean Mortality"), format = "html")
+      col.names = c("Region", "Mean Mortality"))
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-Region
-</th>
-<th style="text-align:right;">
-Mean Mortality
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-South
-</td>
-<td style="text-align:right;">
-402.2686
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-Midwest
-</td>
-<td style="text-align:right;">
-335.9101
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-2
-</td>
-<td style="text-align:left;">
-North East
-</td>
-<td style="text-align:right;">
-313.6581
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-West
-</td>
-<td style="text-align:right;">
-300.0910
-</td>
-</tr>
-</tbody>
-</table>
+|     | Region    |  Mean Mortality|
+|-----|:----------|---------------:|
+| 3   | South     |        410.1525|
+| 1   | Midwest   |        342.7488|
+| 2   | Northeast |        322.6877|
+| 4   | West      |        304.0757|
+
 ##### Most and Least Farmer's Market Counts by State
 
-As with Heart Disease Mortality, Farmer's Market can be drawn on bar plot. The same condition is given to the data set.
+Next, I also like to see by state and division the farmer's market count.
 
 ``` r
 # number of farmer's market by state and division
@@ -371,191 +350,34 @@ farmers_market_state <- farmers_market %>%
   arrange(state_abb)
 
 # number of farmer's market
-farmers_market_bar <- ggplot(farmers_market_state, 
-                             aes(reorder(state_abb, -count), 
-                                 count, fill = division)) +
+ggplot(farmers_market_state, 
+       aes(reorder(state_abb, -count), 
+           count, fill = division)) +
   geom_bar(stat = 'identity', width = 0.5) +
   ggtitle("Farmer's Markets by State") +
-  xlab("State") + ylab("Count")
-
-farmers_market_bar + theme_bw() + 
-  theme(axis.text.x = element_text(size = 7, angle = 75),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 10),
-        legend.position = c(0.9,0.8),
-        legend.background = element_rect(fill = alpha('white', 0)))
+  xlab("State") + ylab("Count") + theme_barplot
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
-As expected, the largest state California comes first followed by New York, the third largest. Even though there seems to be a pattern of population, this is not true with so many exceptions including Texas not even in top 10. One trend is that the last half are mostly states in South and some part of West in [Mountain Time Zone](https://www.timetemperature.com/tzus/mountain_time_zone.shtml).
+As expected, the largest state California comes first followed by New York, the third largest state. Even though there seems to be a pattern of population, this is not true with so many exceptions including Texas being not even in top 10. One trend is that the last half are mostly states in South and some part of West in [Mountain Time Zone](https://www.timetemperature.com/tzus/mountain_time_zone.shtml).
 
 ``` r
 farmers_market_region <- aggregate(farmers_market_state[, "count"], 
                                    list(farmers_market_state$division), mean)
 kable(farmers_market_region[order(-farmers_market_region$count), ],
-      col.names = c("Region", "Count"), format = "html")
+      col.names = c("Region", "Count"))
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-Region
-</th>
-<th style="text-align:right;">
-Count
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-2
-</td>
-<td style="text-align:left;">
-North East
-</td>
-<td style="text-align:right;">
-203.8889
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-Midwest
-</td>
-<td style="text-align:right;">
-200.8333
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-West
-</td>
-<td style="text-align:right;">
-142.7273
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-South
-</td>
-<td style="text-align:right;">
-136.4706
-</td>
-</tr>
-</tbody>
-</table>
-Recalling that California has the most farmer's market in number, West is not expect to come third with slightly more than South does. This is probably because of other states in West thinly populated. Another view in a different angle is to adjust it to population.
+|     | Region    |     Count|
+|-----|:----------|---------:|
+| 2   | Northeast |  203.8889|
+| 1   | Midwest   |  199.5833|
+| 4   | West      |  143.3636|
+| 3   | South     |  132.1765|
 
-``` r
-# total population by state
-population_state <- population_county %>%
-  group_by(state) %>%
-  summarise(population = sum(population)) %>%
-  arrange(state)
-# number of farmer's market per 100,000
-farmers_market_state <- merge(farmers_market_state, population_state, by = "state")
-farmers_market_state$per_100k <- with(farmers_market_state, 
-                                      count/population*100000)
-farmers_market_popl_adj_bar <- ggplot(farmers_market_state, 
-                                      aes(reorder(state_abb, -per_100k), 
-                                          per_100k, 
-                                          fill = division)) +
-  geom_bar(stat = 'identity', width = 0.5) +
-  ggtitle("Farmer's Markets per 100,000 by State") +
-  xlab("State") + ylab("Count")
+Recalling that California has the most farmer's market in number, West was not expect to come third with slightly more than South does. This is probably because of other states in West thinly populated.
 
-farmers_market_popl_adj_bar + theme_bw() + 
-  theme(axis.text.x = element_text(size = 7, angle = 75),
-        legend.title = element_blank(),
-        legend.text = element_text(size = 10),
-        legend.position = c(0.9,0.8),
-        legend.background = element_rect(fill = alpha('white', 0)))
-```
-
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-12-1.png)
-
-Now, the other states in West are relatively in the front. However, it needs more consideration whether to take population into account this way because it is unclear if population is highly related to the number of farmer's markets. Either way, the four areas are ranked the same with South the least.
-
-``` r
-farmers_market_division_adj <- aggregate(farmers_market_state[, "per_100k"], 
-                                         list(farmers_market_state$division), mean)
-kable(farmers_market_division_adj[order(-farmers_market_division_adj$x), ],
-      col.names = c("Region", "Count"), format = "html")
-```
-
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:left;">
-Region
-</th>
-<th style="text-align:right;">
-Count
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-2
-</td>
-<td style="text-align:left;">
-North East
-</td>
-<td style="text-align:right;">
-5.225179
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-1
-</td>
-<td style="text-align:left;">
-Midwest
-</td>
-<td style="text-align:right;">
-4.471810
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-4
-</td>
-<td style="text-align:left;">
-West
-</td>
-<td style="text-align:right;">
-3.152899
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-3
-</td>
-<td style="text-align:left;">
-South
-</td>
-<td style="text-align:right;">
-2.899423
-</td>
-</tr>
-</tbody>
-</table>
 #### Part II: Visualization on Map
 
 The findings made by now can be plotted on the real map. In the next, the state map and the county map will be provided with mortality and farmer's market data.
@@ -567,20 +389,17 @@ state_map <- merge(map_data("state"), mortality_state,
                    by.x = "region", by.y = "state", all.x = TRUE)
 
 # mean mortality by state
-mortality_state_map <- ggplot(data = state_map) +
+ggplot(data = state_map) +
   geom_polygon(aes(long, lat, fill = mortality_mean, group = group), 
                color = "black", size = 0.1) +
-  labs(x = "", y = "") +
+  labs(title = "Heart Disease Mortality by State", x = "", y = "", fill = "Mortality") +
   coord_fixed(1.3) +
   scale_fill_gradientn(colours = rev(rainbow(2)), guide = "colorbar")
-
-mortality_state_map +
-  labs(title = "Heart Disease Mortality by State")
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
-As confirmed with statistics, South is the highest in heart disease mortality. North East and West are generally low, so is Midwest except for Missouri and Kentuchy neighboring South.
+As confirmed before, South is the highest in heart disease mortality. Northeast and West are generally low, so is Midwest except for Missouri and Kentuchy, the states neighboring South.
 
 ##### Heart Disease Mortality by County
 
@@ -595,7 +414,7 @@ county_map <- county_map[order(county_map$order), ]
 mortality_county_map <- ggplot(data = county_map) +
   geom_polygon(aes(long, lat, fill = mortality, group = group), 
                color = "darkgray", size = 0.1) +
-  labs(x = "", y = "") +
+  labs(x = "", y = "", fill = "Mortality") +
   coord_fixed(1.3) +
   scale_fill_gradientn(colours = rev(rainbow(2)), guide = "colorbar")
 
@@ -603,7 +422,7 @@ mortality_county_map +
   labs(title = "Heart Disease Mortality by County")
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-17-1.png)
 
 County map shows finer version of data. In fact, this is the map with raw data since Heart Disease Mortality is set by county. The dark gray is missing in the mortality data set. I am leaving them empty rather than artificially filling the data because they will be excluded in the process of analysis.
 
@@ -611,39 +430,20 @@ County map shows finer version of data. In fact, this is the map with raw data s
 
 ``` r
 # farmer's market location points
-farmers_martket_loc1 <- data.frame(
+farmers_martket_loc <- data.frame(
   lat = as.vector(farmers_market$lat),
   long = as.vector(farmers_market$long)
 )
 
 mortality_county_map +
   labs(title = "Heart Disease Mortality with Farmer's Market") +
-  geom_point(data = farmers_martket_loc1, aes(x = long, y = lat), 
+  geom_point(data = farmers_martket_loc, aes(x = long, y = lat), 
              color = "yellow", size = 0.01, alpha = 0.2)
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
-Now, the county map are plotted with farmer's markets which are yellow dots. North East seems to have the most farmer's markets followed by Midwest and Far West. One thing to note here is that South obviously has more farmer's markets than West, however, South is much higher than West in mortaliy. Taking population into account might a good adjustment.
-
-##### Heart Disease Mortality and Farmer's Market
-
-``` r
-farmers_martket_loc2 <- data.frame(
-  lat = as.vector(farmers_market$lat),
-  long = as.vector(farmers_market$long),
-  size = as.vector(farmers_market$population/100000)
-)
-
-mortality_county_map +
-  labs(title = "Heart Disease Mortality with Population Adjusted Farmer's Market") +
-  geom_point(data = farmers_martket_loc2, aes(x = long, y = lat), 
-             color = "yellow", size = 0.1/farmers_martket_loc2$size, alpha = 0.2)
-```
-
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-17-1.png)
-
-With farmer's markets adjusted to unit of per 100,000 population, it seems like West has more farmer's markets but South still has many yellow dots. It would be too soon to claim that heart disease mortality and number of farmer's market are correlated. It is necessary to take a closer look at the map.
+Now, the county map are plotted with farmer's markets which are yellow dots. North East seems to have the most farmer's markets followed by Midwest and Far West (CA, OR, WA). One thing to note here is that South obviously has more farmer's markets than West, however, South is much higher than West in mortaliy. This must be related with how the states are populated. Examining this map and [Population Density Map should](http://utahlandowners.com/understanding-population-density/) will be helpful to understand the issue.
 
 ``` r
 # receive reginal division as parameter
@@ -653,33 +453,31 @@ farmers_market_loc_division <- function(division) {
   
   farmers_martket_loc <- data.frame(
     lat = as.vector(farmers_market_division$lat),
-    long = as.vector(farmers_market_division$long),
-    size = as.vector(farmers_market_division$population/100000)
+    long = as.vector(farmers_market_division$long)
   )  
   
   # draw reginal map
   p <- ggplot(data = county_map[which(county_map$division == division), ]) +
     geom_polygon(aes(long, lat, fill = mortality, group = group), 
-                 color = "darkgray", size = 0.1) +
-    labs(x = "", y = "") +
+                 color = "darkgray", size = 0.05) +
+    labs(title = division, x = "", y = "", fill = "Mortality") +
     coord_fixed(1.3) +
-    scale_fill_gradientn(colours = rev(rainbow(2)), limits = c(100, 1100),
+    scale_fill_gradientn(colours = rev(rainbow(2)), limits = c(100, 1400),
                          guide = "colorbar") +
     geom_point(data = farmers_martket_loc, aes(x = long, y = lat), 
-               color = "yellow", alpha = 0.75,
-               size = 0.1/farmers_martket_loc$size)
+               color = "yellow", alpha = 0.5)
   
   return(p)
 }
 ```
 
-The function does the job of closing up each region, still population adjusted. First to see North East, mortality is mostly very low and there are many farmer's markets which are small dots in the highly populated region.
+The function does the job of closing up each region, still population adjusted. First to see Northeast, mortality is mostly very low and there are many farmer's markets which are small dots in the highly populated region.
 
 ``` r
-farmers_market_loc_division("North East")
+farmers_market_loc_division("Northeast")
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 Midwest also has a lot of farmer's markets with decent mortality. There are some red parts that have less or smaller dots in the bottom area.
 
@@ -687,7 +485,7 @@ Midwest also has a lot of farmer's markets with decent mortality. There are some
 farmers_market_loc_division("Midwest")
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 Except for Texas area, it is quite clear that areas in red have smaller dots or even none. This pattern is strong in the middle around Louisiana and Mississippi.
 
@@ -695,19 +493,19 @@ Except for Texas area, it is quite clear that areas in red have smaller dots or 
 farmers_market_loc_division("South")
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
-West shows blue in the most of areas. There are some large yellow dots where population density is extremely low. Nevada has relatively red counties that have zero or one farmer's market.
+West shows blue in most of the areas. There are some large yellow dots where population density is extremely low. Nevada has relatively red counties that have zero or one farmer's market.
 
 ``` r
 farmers_market_loc_division("West")
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-22-1.png)
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
-##### Correlation between Heart Disease Mortality and Farmer's Market
+#### Part III: Pointplot and Lineplot
 
-With the idea gained from visualization, it is time to pull the statistics. Let's take a look at the basic statistics first. 1st quantile is same as minimum, suggesting there are just so many counties with only one farmer's market. Also, it is skewed to the right and maximum is far out of normal range. I would probably cut off only the right tail to remove outliers.
+With the idea gained from visualization, it is time to analyze the data. Let's take a look at the basic statistics first. 1st quantile is same as minimum, suggesting there are just so many counties with only one farmer's market. Also, it is skewed to the right and maximum is far out of normal range. I would probably cut off only the right tail to remove outliers.
 
 ``` r
 farmers_market_count <- farmers_market %>%
@@ -719,352 +517,231 @@ summary(farmers_market_count$farmers_market_count)
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   1.000   1.000   2.000   3.683   4.000 125.000
+    ##   1.000   1.000   2.000   3.633   4.000 125.000
 
-To see the relationship, the number of farmer's market in each county is added onto heart disease mortality. Note that Heart Disease Mortality misses just a few counties, but there are many counties that do not appear on Farmer's Market. Most of these counties are very small and thought to have none. Nonetheless, I will count them as NA even though I enter zero for convenience.
+To see the relationship, the number of farmer's market in each county is added onto heart disease mortality. Note that Heart Disease Mortality has just a few counties missing the data, but there are many counties that do not appear on Farmer's Market. Most of these counties are very small and thought to have none. Nonetheless, I will count them as 'NA' and I enter zero for convenience.
 
 ``` r
 heart_mortality <- merge(heart_mortality, farmers_market_count, 
                          by = c("state", "county"), all.x = T)
-heart_mortality <- merge(heart_mortality, population_county,
-                         by = c("state", "county"), all.x = T)
 heart_mortality$farmers_market_count[is.na(heart_mortality$farmers_market_count)] <- 0
-
-# total number of farmer's markets
-p_farmers_market_raw <- ggplot(heart_mortality, 
-                               aes(farmers_market_count, 
-                                   mortality)) +
-  geom_point(aes(color = division), alpha = 0.1, size = 1) + 
-  geom_smooth() + 
-  labs(title = "Total Number",
-       x = "Farmer's Market Total", y = "Mortality per 100,000") +
-  scale_x_continuous(limits = c(0, 30), breaks = seq(0, 30, 5)) +
-  scale_y_continuous(limits = c(100, 600), breaks = seq(150, 600, 50))
-
-# population adjusted
-p_farmers_market_pop_adj <- ggplot(heart_mortality, 
-                                   aes(farmers_market_count/population*100000,
-                                       mortality)) +
-  geom_point(aes(color = division), alpha = 0.1, size = 1) + 
-  geom_smooth() + 
-  labs(title = "Population Adjusted",
-       x = "Farmer's Market per 100,000", y = "Mortality per 100,000") +
-  scale_x_continuous(limits = c(0, 30), breaks = seq(0, 30, 5)) +
-  scale_y_continuous(limits = c(100, 600), breaks = seq(150, 600, 50))
-
-grid.arrange(p_farmers_market_raw, p_farmers_market_pop_adj, ncol = 2)
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-24-1.png)
-
-Mortality, the Y-value, is widely spread at X-value zero. This is not surprising if you consider two small towns with no farmer's market, one in West and the other in South, which show totally different heart disease mortality being influenced by other factor than farmer's market. Note that higher Y values are blue of South. The first has the trend going down up to 15 or so and going up slightly from there. The second is the population adjusted version for fair comparison but it shows strange ups and downs. To reason why, I am calculating the correlation between mortality and population.
+The following is to draw point plots of the number of farmer's markets versus mortality in the four different regions.
 
 ``` r
-with(heart_mortality, cor.test(mortality, population))
+# scatter plot
+farmers_market_scatter <- function(var, division, color, x_limit) {
+  farmers_market_division <- heart_mortality[heart_mortality$division == division, ]
+  
+  ggplot(farmers_market_division,
+         aes_string(var, "mortality", color = "gender")) +
+  geom_point(aes(color = gender), alpha = 0.25, 
+             size = 0.75, position = "jitter") +
+  geom_smooth() +
+  labs(title = division, x = "", y = "") +
+  scale_x_continuous(limits = c(0, x_limit), breaks = seq(0, x_limit, 5)) +
+  scale_y_continuous(limits = c(100, 600), breaks = seq(150, 600, 50)) +
+  theme(legend.position = "none")
+}
 ```
-
-    ## 
-    ##  Pearson's product-moment correlation
-    ## 
-    ## data:  mortality and population
-    ## t = -7.4393, df = 3116, p-value = 1.302e-13
-    ## alternative hypothesis: true correlation is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -0.16643260 -0.09745085
-    ## sample estimates:
-    ##        cor 
-    ## -0.1321017
-
-The value is -0.13 which means mortality and population are weakly related. Consequently, considering population is not fair but only adds more noises. Therefore, I choose to use the total number of farmer's market for analysis.
 
 ``` r
-mean_mortality_farmers_market_count <- heart_mortality %>%
-  group_by(farmers_market_count) %>%
-  summarise(mean_mortality = median(mortality)) %>%
-  arrange(farmers_market_count)
-
-kable(mean_mortality_farmers_market_count[1:16, ], format = "html")
+grid.arrange(farmers_market_scatter("farmers_market_count", 'Northeast', 'lightgreen', 15),
+             farmers_market_scatter("farmers_market_count", 'Midwest', 'lightpink', 15),
+             farmers_market_scatter("farmers_market_count", 'South', 'lightblue', 15),
+             farmers_market_scatter("farmers_market_count", 'West', 'violet', 15),
+             ncol = 4, left = "Mortality", bottom = "Number of Farmer's Count")
 ```
 
-<table>
-<thead>
-<tr>
-<th style="text-align:right;">
-farmers\_market\_count
-</th>
-<th style="text-align:right;">
-mean\_mortality
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-372.40
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-363.50
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:right;">
-345.30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:right;">
-338.60
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-328.90
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:right;">
-323.70
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:right;">
-301.20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:right;">
-321.70
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:right;">
-317.25
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:right;">
-300.45
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:right;">
-299.65
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:right;">
-273.30
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-12
-</td>
-<td style="text-align:right;">
-297.40
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:right;">
-276.70
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-14
-</td>
-<td style="text-align:right;">
-314.20
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:right;">
-310.80
-</td>
-</tr>
-</tbody>
-</table>
-Getting rid of deviations, the mean values of farmer's market count appears to decline as they are more. However, the trend starts to rise around 14 and 15. In addition, recall that zero is actually NA, but it seems like they are likely to be zero in the trend. For calculating correlation in the next, I will not include NAs, though.
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-27-1.png)
 
-``` r
-with(subset(heart_mortality, farmers_market_count > 0 & farmers_market_count < 14), 
-     cor.test(mortality, farmers_market_count))
-```
-
-    ## 
-    ##  Pearson's product-moment correlation
-    ## 
-    ## data:  mortality and farmers_market_count
-    ## t = -12.16, df = 2111, p-value < 2.2e-16
-    ## alternative hypothesis: true correlation is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -0.2952640 -0.2155517
-    ## sample estimates:
-    ##        cor 
-    ## -0.2558427
-
-The correlation is -0.25 which is not quite high enough due to the reasons I suspect that the deviations are too high. This again comes from other factors that give rise to discrepancies. For example, some county is low in mortality with no farmer's market because it is located in North East. On the contrary, there could be some county in the other area with a few farmer's market but is high in mortality because of regional or racial factors. These are contradictory, resulting in lowering the correlation.
-
-------------------------------------------------------------------------
+Upto around 15 seems to be decreasing in mortality in all the regions. However, Midwest and South are increasing after then while North East and West gradually decrease or remain the same. What matters here is the fact that the number of farmer's markets becomes very sparse after 10 count, especially in Midwest and South. Thus, I can say that there are declining trends in all the regions until count 10 or so.
 
 ##### Considering Categorical Data
 
 One way to get closer to more fair correlation is to consider categorical data given in Farmer's Market. There are 34 categories from credit card availability to different foods on sale. These are all indicators to the size of individual farmer's market. I have already given each of them one point if the item is available and set aside the results as score variable.
 
 ``` r
+# one point for each item if available
+farmers_market$score <- 0
+for (r in 1:nrow(farmers_market)) {
+  for (c in 5:38) {
+    if (farmers_market[r, c] == "Y") {
+      farmers_market$score[r] = farmers_market$score[r] + 1
+    }
+  }
+}
+
 farmers_market_score <- farmers_market %>%
   group_by(state, county) %>%
-  summarise(farmers_market_score = mean(score)) %>%
+  summarise(farmers_market_score = round(mean(score))) %>%
   arrange(state, county)
-
-# normality
-ggplot(farmers_market_score, aes(farmers_market_score)) +
-  geom_histogram(binwidth = 1, color = 'gray', fill = 'lightblue') +
-  labs(title = "Farmer's Market Score", x = "Score", y = "Count")
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-28-1.png)
-
-Luckily, the distribution is almost normal excluding at zero. While this many zero-score farmer's market was not expected, they are meaningful little to nothing because they are highly likely very small (none available out of 34 items listed). I will cut them off with some of left and right tails for analysis.
+Luckily, the distribution is almost normal excluding at zero. While this many zero-score farmer's market was not expected, their meaning is little to nothing because they are highly likely very small-sized farmer's markets (none available out of 34 items listed). I will cut them off with some of left and right tails for later analysis.
 
 ``` r
 heart_mortality <- merge(heart_mortality, farmers_market_score, 
                          by = c("state", "county"), all.x = T)
 heart_mortality$farmers_market_score[is.na(heart_mortality$farmers_market_score)] <- 0
-
-ggplot(heart_mortality[heart_mortality$farmers_market_score > 0, ], 
-       aes(farmers_market_score, mortality)) +
-  geom_point(aes(color = division), alpha = 0.1) + 
-  geom_smooth() +
-  labs(title = "Farmer's Market Score", x = "Score", y = "Mortality") +
-  scale_x_continuous(limits = c(0, 25), breaks = seq(0, 25, 5)) +
-  scale_y_continuous(limits = c(200, 600), breaks = seq(200, 600, 100))
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-29-1.png)
-
-Even though the trend line is consistently declining, the deviation is apparently too big. The score is the mean of the whole farmer's markets in the same county. I think this spread dots on the plot by removing the effect of number of farmer's market. This makes sense because a county with only one farmer's market with a good score would looks better than another county with a couple of farmer's markets with full scores but also with several very small farmer's markets. To add the quantative effect, I am creating a varible to combine them as below, eventually having the same value of sum of scores instead of mean of scores.
+As with farmer's market count, I am drawing point plots in different regions. The X-value will be the scores this time.
 
 ``` r
-heart_mortality$final <- with(heart_mortality, farmers_market_count*farmers_market_score)
-
-ggplot(heart_mortality[heart_mortality$final > 0, ], aes(final)) +
-  geom_histogram(binwidth = 1, fill = "lightslateblue", color = "gray") +
-  coord_cartesian(xlim = c(0, 80), ylim = c(1, 80)) +
-  scale_x_continuous(limits = c(0, 100), breaks = seq(0, 100, 5))
+grid.arrange(farmers_market_scatter("farmers_market_score", 'Northeast', 'lightgreen', 20),
+             farmers_market_scatter("farmers_market_score", 'Midwest', 'lightpink', 20),
+             farmers_market_scatter("farmers_market_score", 'South', 'lightblue', 20),
+             farmers_market_scatter("farmers_market_score", 'West', 'violet', 20),
+             ncol = 4, left = "Mortality", bottom = "Number of Farmer's Score")
 ```
 
 ![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
-``` r
-with(heart_mortality[ heart_mortality$farmers_market_count < 15 & heart_mortality$farmers_market_score > 0 & heart_mortality$farmers_market_score < 30 & heart_mortality$population > 0 & heart_mortality$division == "South" , ], cor.test(mortality, final))
-```
+First thing to notice is that West is the lowest in mortality at almost every level, then North East and Midwest, South being the highest. This is not particularly found in the previous comparison of farmer's market count. While Midwest does not show any pattern, North East and West show similar pattern at differnt levels, which slightly goes up until 10 and starts to drop. Secondly, South shows some meaningful trend. Only this region has a consistent tendancy of going down as score increases.
 
-    ## 
-    ##  Pearson's product-moment correlation
-    ## 
-    ## data:  mortality and final
-    ## t = -9.7082, df = 704, p-value < 2.2e-16
-    ## alternative hypothesis: true correlation is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -0.4070789 -0.2768451
-    ## sample estimates:
-    ##       cor 
-    ## -0.343613
+------------------------------------------------------------------------
+
+### Analysis
 
 ``` r
-summary(heart_mortality[heart_mortality$final > 0, "final"])
+cat(quantile(heart_mortality$farmers_market_count, probs = seq(0.9, 1, 0.05)),
+    "\nFarmer's Market Score 90% Qt by 5%: ",
+    quantile(heart_mortality$farmers_market_score, probs = seq(0.9, 1, 0.05)))
 ```
 
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##    1.00   14.00   23.00   54.42   52.00 1175.00
+    ## 6 10 125 
+    ## Farmer's Market Score 90% Qt by 5%:  18 20 29
 
 ``` r
-heart_mortality <- subset(heart_mortality, mortality > 200 & mortality < 550)
-heart_mortality <- subset(heart_mortality, final > 0 & final < 50)
+# remove outliers
+quantile_cal <- function(gen, prob) {
+  val <- quantile(heart_mortality[heart_mortality$gender == gen, "mortality"], prob)[[1]]
+  return(val)
+}
+
+heart_mortality <- subset(heart_mortality, gender == "Female" | 
+                            mortality < quantile_cal("Male", 0.975))
+
+heart_mortality <- subset(heart_mortality, gender == "Male" | 
+                            mortality < quantile_cal("Female", 0.975))
 ```
 
 ``` r
-p_northeast <- ggplot(heart_mortality[heart_mortality$division == "North East", ], 
-                       aes(final, mortality)) +
-  geom_point(color = "lightgreen", alpha = 0.5) + 
-  geom_smooth() +
-  labs(title = "North East", x = "Score", y = "Mortality") +
-  scale_x_continuous(limits = c(0, 50), breaks = seq(0, 50, 10)) +
-  scale_y_continuous(limits = c(200, 550), breaks = seq(200, 550, 100))
+# correlation by gender
+corr_test <- function(abb, gender_type, var) {
+  out <- tryCatch({
+    df <- subset(heart_mortality, state_abb == abb &
+                   gender == gender_type &
+                   farmers_market_count > 0 &
+                   farmers_market_count < 10 & 
+                   farmers_market_score < 20)
+    
+    if (count(df) >= 10) {
+      out <- as.numeric(with(df, cor.test(mortality, 
+                             eval(parse(text = var))))[["estimate"]])
+    } else {
+      out <- NA
+    }
+  }, error = function(cond) {
+    out <- NA
+  })
+  return(out)
+}
 
-p_midwest <- ggplot(heart_mortality[heart_mortality$division == "Midwest", ], 
-                       aes(final, mortality)) +
-  geom_point(color = "lightpink", alpha = 0.5) + 
-  geom_smooth() +
-  labs(title = "Midwest", x = "Score", y = "") +
-  scale_x_continuous(limits = c(0, 50), breaks = seq(0, 50, 10)) +
-  scale_y_continuous(limits = c(200, 550), breaks = seq(200, 550, 100))
-
-p_south <- ggplot(heart_mortality[heart_mortality$division == "South", ], 
-                       aes(final, mortality)) +
-  geom_point(color = "lightblue", alpha = 0.5) + 
-  geom_smooth() +
-  labs(title = "South", x = "Score", y = "") +
-  scale_x_continuous(limits = c(0, 50), breaks = seq(0, 50, 10)) +
-  scale_y_continuous(limits = c(200, 550), breaks = seq(200, 550, 100))
-
-p_west <- ggplot(heart_mortality[heart_mortality$division == "West", ], 
-                       aes(final, mortality)) +
-  geom_point(color = "violet", alpha = 0.5) + 
-  geom_smooth() +
-  labs(title = "West", x = "Score", y = "") +
-  scale_x_continuous(limits = c(0, 50), breaks = seq(0, 50, 10)) +
-  scale_y_continuous(limits = c(200, 550), breaks = seq(200, 550, 100))
-
-grid.arrange(p_northeast, p_midwest, p_south, p_west, ncol = 4)
+# point plot
+corr_point <- function(df, title) {
+  ggplot(df, aes(corr_count, corr_score, color = division)) + 
+    geom_point() + geom_text(aes(label = state), hjust = 0.5, vjust = 1.25, size = 2) +
+    geom_hline(yintercept = 0, linetype = "dotted") + 
+    geom_vline(xintercept = 0, linetype = "dotted") +
+    labs(title = paste("Correlation of Mortality vs. Farmer's Market Count/Score", title),
+         x = "Count", y = "Score", color = "") +
+    scale_x_continuous(limits = c(-0.7, 0.7), breaks = seq(-0.7, 0.7, 0.2)) + 
+    scale_y_continuous(limits = c(-0.7, 0.7), breaks = seq(-0.7, 0.7, 0.2))
+}
 ```
 
-![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-33-1.png)
+``` r
+state <- c(NE, MW, SO, WE)
+corr_male <- data.frame(state)
+
+corr_male$corr_count <- sapply(corr_male$state, function(x) 
+  corr_test(x, "Male", "farmers_market_count"))
+corr_male$corr_score <- sapply(corr_male$state, function(x) 
+  corr_test(x, "Male", "farmers_market_score"))
+corr_male$division <- sapply(corr_male$state, function(x) region_division(x))
+
+corr_point(corr_male, "(Male)")
+```
+
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-34-1.png)
+
+``` r
+corr_female <- data.frame(state)
+
+corr_female$corr_count <- sapply(corr_female$state, function(x) 
+  corr_test(x, "Female", "farmers_market_count"))
+corr_female$corr_score <- sapply(corr_female$state, function(x) 
+  corr_test(x, "Female", "farmers_market_score"))
+corr_female$division <- sapply(corr_female$state, function(x) region_division(x))
+
+corr_point(corr_female, "(Female)")
+```
+
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-35-1.png)
+
+------------------------------------------------------------------------
+
+### Final Result
+
+``` r
+# median mortality by farmer's market count
+median_mortality_farmers_market_count <- heart_mortality %>%
+  group_by(farmers_market_count, gender) %>%
+  summarise(value = median(mortality), type = "count") %>%
+  arrange(farmers_market_count)
+colnames(median_mortality_farmers_market_count)[1] <- "var"
+median_mortality_farmers_market_count <- median_mortality_farmers_market_count[1:90, ]
+
+# median mortality by farmer's market score
+median_mortality_farmers_market_score <- heart_mortality %>%
+  group_by(farmers_market_score, gender) %>%
+  summarise(value = median(mortality), type = "score") %>%
+  arrange(farmers_market_score)
+colnames(median_mortality_farmers_market_score)[1] <- "var"
+
+median_values <- bind_rows(median_mortality_farmers_market_count,
+                           median_mortality_farmers_market_score)
+```
+
+``` r
+# line plot
+median_mortality_line <- function(type, x_limit) {
+  median_values <- median_values[median_values$type == type, ]
+  median_male <- median(heart_mortality[heart_mortality$gender == "Male", "mortality"])
+  median_female <- median(heart_mortality[heart_mortality$gender == "Female", "mortality"])
+  
+  ggplot(median_values, aes(var, value, color = gender)) +
+    geom_point() + geom_line() + 
+    geom_hline(yintercept = median_male, linetype = "dotted", color = "blue", size = 1) +
+    geom_hline(yintercept = median_female, linetype = "dotted", color = "red", size = 1) +
+    labs(x = stri_trans_totitle(type), y = "", color = "") +
+    scale_x_continuous(limits = c(1, x_limit), breaks = seq(1, x_limit, 2)) +
+    scale_y_continuous(limits = c(200, 500), breaks = seq(200, 500, 50))
+}
+```
+
+``` r
+# include over 95% observations
+grid.arrange(median_mortality_line("count", 11),
+             median_mortality_line("score", 21),
+             ncol = 2, left = "Mortality", 
+             top = "Median Mortality vs. Farmer's Market Count/Score")
+```
+
+![](heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 ------------------------------------------------------------------------
 
