@@ -26,4 +26,8 @@ Expressing the result in state level for summary, heart disease mortalities in m
 
 One thing to note is that the farmer's market dataset is highly skewed, having small number of faremr's markets in each county. This  trait made me focus on observing the relationship of farmer's markets less than 10, which covers most of the observations. The final result is as the following plot.
 
+
 ![Final Result](https://github.com/Q-shick/Explanatory-Data-Analysis/blob/master/final_project/heart_disease_mortaltiy_and_farmers_market_files/figure-markdown_github/unnamed-chunk-38-1.png)
+
+
+As seen in the plot, the mortality decreases as number of farmer's market increases. Having two or three farmer's market can already ensure less than median mortality for both men and women. However, it is a bit ambiguous if the same can explain the relationship between mortality and farmer's market quality while there are only slight trends. For more details and all the processes done, please see the markdown file in "final_project" folder.
